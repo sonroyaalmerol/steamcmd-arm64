@@ -24,6 +24,7 @@ RUN set -x \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		libc6:armhf=2.36-9+deb12u4 \
 		libstdc++6:armhf=12.2.0-14 \
+		binfmt-support=2.2.2-2 \
 		ca-certificates=20230311 \
 		nano=7.2-1 \
 		curl=7.88.1-10+deb12u5 \
