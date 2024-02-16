@@ -31,6 +31,8 @@ RUN set -x \
 		locales=2.36-9+deb12u4 \
   		wget=1.21.3-1+b1 \
 		gnupg=2.2.40-1.1 \
+	&& modprobe binfmt_misc \
+	&& mount -t binfmt_misc none /proc/sys/fs/binfmt_misc \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
 	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
 	&& wget --progress=dot:giga https://itai-nelken.github.io/weekly-box86-debs/debian/box86.list -O /etc/apt/sources.list.d/box86.list \
@@ -39,6 +41,8 @@ RUN set -x \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		box64-arm64 \
 		box86 \
+	&& echo ':x86:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x03\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/local/bin/box86:' | tee /proc/sys/fs/binfmt_misc/register \
+	&& echo ':x64:M::\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/local/bin/box64:' | tee /proc/sys/fs/binfmt_misc/register \
 	&& sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
 	&& dpkg-reconfigure --frontend=noninteractive locales \
 	# Create unprivileged user
