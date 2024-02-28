@@ -56,22 +56,16 @@ RUN set -x \
 		ca-certificates=20210119 \
         build-essential=12.9 \
         cmake=3.18.4-2+deb11u1 \
+		parallel=20161222-1.1 \
 	&& git clone https://github.com/ptitSeb/box64.git \
     && mkdir /box64/build-8k \
     && mkdir /box64/build-16k \
     && mkdir /box64/build-64k \
-	&& cd /box64/build-8k \
-	&& cmake .. -DARM_DYNAREC=ON -DPAGE8K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-	&& make -j$(nproc) \
-	&& make install DESTDIR=/tmp/install8k \
-	&& cd /box64/build-16k \
-	&& cmake .. -DARM_DYNAREC=ON -DPAGE16K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-	&& make -j$(nproc) \
-	&& make install DESTDIR=/tmp/install16k \
-	&& cd /box64/build-64k \
-	&& cmake .. -DARM_DYNAREC=ON -DPAGE64K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-	&& make -j$(nproc) \
-	&& make install DESTDIR=/tmp/install64k
+    && cd /box64 \
+    && parallel ::: \
+        "(cd build-8k && cmake .. -DARM_DYNAREC=ON -DPAGE8K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo && make -j$(nproc) && make install DESTDIR=/tmp/install8k)" \
+        "(cd build-16k && cmake .. -DARM_DYNAREC=ON -DPAGE16K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo && make -j$(nproc) && make install DESTDIR=/tmp/install16k)" \
+        "(cd build-64k && cmake .. -DARM_DYNAREC=ON -DPAGE64K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo && make -j$(nproc) && make install DESTDIR=/tmp/install64k)"
 
 ############################################################
 # Dockerfile that contains SteamCMD and Box86/64
