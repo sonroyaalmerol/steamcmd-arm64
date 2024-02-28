@@ -5,7 +5,6 @@ ENV DEBIAN_FRONTEND noninteractive
 # Set SHELL option explicitly
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# hadolint ignore=DL3008
 RUN set -x \
 	# Install, update & upgrade packages
 	&& apt-get update \
@@ -15,7 +14,7 @@ RUN set -x \
 
 ############################################################
 
-FROM arm64v8/debian:bookworm-slim as box_build
+FROM arm64v8/debian:bookworm-slim as box_generic_build
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -42,6 +41,72 @@ RUN set -x \
 	&& rm -rf /var/lib/apt/lists/*
 
 ############################################################
+
+FROM arm64v8/debian:bookworm-slim as box64_8k_build
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Set SHELL option explicitly
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN set -x \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+        git=1:2.39.2-1.1 \
+        build-essential=12.9 \
+        cmake=3.25.1-1 \
+	&& git clone https://github.com/ptitSeb/box64.git \
+    && mkdir /box64/build \
+	&& cd /box64/build \
+	&& cmake .. -DARM_DYNAREC=ON -DPAGE8K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	&& make -j$(nproc) \
+	&& make install
+
+############################################################
+
+FROM arm64v8/debian:bookworm-slim as box64_16k_build
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Set SHELL option explicitly
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN set -x \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+        git=1:2.39.2-1.1 \
+        build-essential=12.9 \
+        cmake=3.25.1-1 \
+	&& git clone https://github.com/ptitSeb/box64.git \
+    && mkdir /box64/build \
+	&& cd /box64/build \
+	&& cmake .. -DARM_DYNAREC=ON -DPAGE16K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	&& make -j$(nproc) \
+	&& make install
+
+############################################################
+
+FROM arm64v8/debian:bookworm-slim as box64_64k_build
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Set SHELL option explicitly
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN set -x \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+        git=1:2.39.2-1.1 \
+        build-essential=12.9 \
+        cmake=3.25.1-1 \
+	&& git clone https://github.com/ptitSeb/box64.git \
+    && mkdir /box64/build \
+	&& cd /box64/build \
+	&& cmake .. -DARM_DYNAREC=ON -DPAGE64K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	&& make -j$(nproc) \
+	&& make install
+
+############################################################
 # Dockerfile that contains SteamCMD and Box86/64
 ############################################################
 
@@ -62,10 +127,12 @@ ENV DEBUGGER "/usr/local/bin/box86"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 COPY --from=qemu_build /usr/bin/qemu-i386-static /usr/bin/qemu-i386-static
-COPY --from=box_build /usr/local/bin/box86 /usr/local/bin/box86
-COPY --from=box_build /usr/local/bin/box64 /usr/local/bin/box64
+COPY --from=box_generic_build /usr/local/bin/box86 /usr/local/bin/box86
+COPY --from=box_generic_build /usr/local/bin/box64 /usr/local/bin/box64
+COPY --from=box64_8k_build /usr/local/bin/box64 /usr/local/bin/box64-8k
+COPY --from=box64_16k_build /usr/local/bin/box64 /usr/local/bin/box64-16k
+COPY --from=box64_64k_build /usr/local/bin/box64 /usr/local/bin/box64-64k
 
-# hadolint ignore=DL3008
 RUN set -x \
 	# Install, update & upgrade packages
 	&& dpkg --add-architecture armhf \
