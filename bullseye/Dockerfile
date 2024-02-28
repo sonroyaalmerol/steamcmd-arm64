@@ -24,6 +24,10 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN set -x \
+	&& apt-get update \
+ 	&& apt-get install -y --no-install-recommends --no-install-suggests \
+  		wget=1.21-1+deb11u1 \
+		gnupg=2.2.27-2+deb11u2 \
 	# Install, update & upgrade packages
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
 	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
@@ -73,8 +77,6 @@ RUN set -x \
 		nano=5.4-2+deb11u2 \
 		curl=7.74.0-1.3+deb11u11 \
 		locales=2.31-13+deb11u7 \
-  		wget=1.21-1+deb11u1 \
-		gnupg=2.2.27-2+deb11u2 \
 	&& sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
 	&& dpkg-reconfigure --frontend=noninteractive locales \
 	# Create unprivileged user
