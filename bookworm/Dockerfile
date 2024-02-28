@@ -26,6 +26,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -x \
 	&& apt-get update \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		ca-certificates=20230311 \
   		wget=1.21.3-1+b1 \
 		gnupg=2.2.40-1.1 \
 	# Install, update & upgrade packages

@@ -26,6 +26,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -x \
 	&& apt-get update \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		ca-certificates=20210119 \
   		wget=1.21-1+deb11u1 \
 		gnupg=2.2.27-2+deb11u2 \
 	# Install, update & upgrade packages
