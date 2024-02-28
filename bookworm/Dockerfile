@@ -14,6 +14,28 @@ RUN set -x \
 	&& rm -rf /var/lib/apt/lists/*
 
 ############################################################
+
+FROM arm64v8/debian:bookworm-slim as box_build
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Set SHELL option explicitly
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# hadolint ignore=DL3008
+RUN set -x \
+	# Install, update & upgrade packages
+	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
+	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
+	&& wget --progress=dot:giga https://itai-nelken.github.io/weekly-box86-debs/debian/box86.list -O /etc/apt/sources.list.d/box86.list \
+	&& (wget -qO- https://itai-nelken.github.io/weekly-box86-debs/debian/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg) \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		box64-arm64 \
+		box86 \
+	&& rm -rf /var/lib/apt/lists/*
+
+############################################################
 # Dockerfile that contains SteamCMD and Box86/64
 ############################################################
 
@@ -34,7 +56,8 @@ ENV DEBUGGER "/usr/local/bin/box86"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 COPY --from=qemu_build /usr/bin/qemu-i386-static /usr/bin/qemu-i386-static
-COPY --from=qemu_build /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
+COPY --from=box_build /usr/local/bin/box86 /usr/local/bin/box86
+COPY --from=box_build /usr/local/bin/box64 /usr/local/bin/box64
 
 # hadolint ignore=DL3008
 RUN set -x \
@@ -52,14 +75,6 @@ RUN set -x \
 		locales=2.36-9+deb12u4 \
   		wget=1.21.3-1+b1 \
 		gnupg=2.2.40-1.1 \
-	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
-	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
-	&& wget --progress=dot:giga https://itai-nelken.github.io/weekly-box86-debs/debian/box86.list -O /etc/apt/sources.list.d/box86.list \
-	&& (wget -qO- https://itai-nelken.github.io/weekly-box86-debs/debian/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg) \
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		box64-arm64 \
-		box86 \
 	&& sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
 	&& dpkg-reconfigure --frontend=noninteractive locales \
 	# Create unprivileged user
