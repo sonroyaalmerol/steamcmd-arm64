@@ -24,6 +24,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN set -x \
+	&& dpkg --add-architecture armhf \
 	&& apt-get update \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		ca-certificates=20230311 \
