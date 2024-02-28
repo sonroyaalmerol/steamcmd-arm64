@@ -42,7 +42,7 @@ RUN set -x \
 
 ############################################################
 
-FROM arm64v8/python:slim-bullseye as box64_custom_build
+FROM arm64v8/python:slim-bookworm as box64_custom_build
 
 ENV DEBIAN_FRONTEND noninteractive
 
