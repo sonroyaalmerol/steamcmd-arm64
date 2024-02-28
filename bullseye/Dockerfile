@@ -97,6 +97,7 @@ RUN set -x \
                 && ln -s \"${STEAMCMDDIR}/linux64/steamcmd\" \"${STEAMCMDDIR}/linux64/steam\" \
                 && ln -s \"${STEAMCMDDIR}/steamcmd.sh\" \"${STEAMCMDDIR}/steam.sh\"" \
 	# Symlink steamclient.so; So misconfigured dedicated servers can find it
+	&& mkdir -p /usr/lib/x86_64-linux-gnu \
  	&& ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "/usr/lib/x86_64-linux-gnu/steamclient.so" \
 	&& rm -rf /var/lib/apt/lists/*
 
