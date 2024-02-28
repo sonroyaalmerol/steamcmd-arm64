@@ -42,7 +42,7 @@ RUN set -x \
 
 ############################################################
 
-FROM arm64v8/debian:bookworm-slim as box64_8k_build
+FROM arm64v8/python:slim-bullseye as box64_custom_build
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -53,58 +53,25 @@ RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
         git=1:2.39.2-1.1 \
+		ca-certificates=20230311 \
         build-essential=12.9 \
         cmake=3.25.1-1 \
 	&& git clone https://github.com/ptitSeb/box64.git \
-    && mkdir /box64/build \
-	&& cd /box64/build \
+    && mkdir /box64/build-8k \
+    && mkdir /box64/build-16k \
+    && mkdir /box64/build-64k \
+	&& cd /box64/build-8k \
 	&& cmake .. -DARM_DYNAREC=ON -DPAGE8K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 	&& make -j$(nproc) \
-	&& make install
-
-############################################################
-
-FROM arm64v8/debian:bookworm-slim as box64_16k_build
-
-ENV DEBIAN_FRONTEND noninteractive
-
-# Set SHELL option explicitly
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-RUN set -x \
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends --no-install-suggests \
-        git=1:2.39.2-1.1 \
-        build-essential=12.9 \
-        cmake=3.25.1-1 \
-	&& git clone https://github.com/ptitSeb/box64.git \
-    && mkdir /box64/build \
-	&& cd /box64/build \
+	&& make install DESTDIR=/tmp/install8k \
+	&& cd /box64/build-16k \
 	&& cmake .. -DARM_DYNAREC=ON -DPAGE16K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 	&& make -j$(nproc) \
-	&& make install
-
-############################################################
-
-FROM arm64v8/debian:bookworm-slim as box64_64k_build
-
-ENV DEBIAN_FRONTEND noninteractive
-
-# Set SHELL option explicitly
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-RUN set -x \
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends --no-install-suggests \
-        git=1:2.39.2-1.1 \
-        build-essential=12.9 \
-        cmake=3.25.1-1 \
-	&& git clone https://github.com/ptitSeb/box64.git \
-    && mkdir /box64/build \
-	&& cd /box64/build \
+	&& make install DESTDIR=/tmp/install16k \
+	&& cd /box64/build-64k \
 	&& cmake .. -DARM_DYNAREC=ON -DPAGE64K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 	&& make -j$(nproc) \
-	&& make install
+	&& make install DESTDIR=/tmp/install64k
 
 ############################################################
 # Dockerfile that contains SteamCMD and Box86/64
@@ -129,9 +96,9 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 COPY --from=qemu_build /usr/bin/qemu-i386-static /usr/bin/qemu-i386-static
 COPY --from=box_generic_build /usr/local/bin/box86 /usr/local/bin/box86
 COPY --from=box_generic_build /usr/local/bin/box64 /usr/local/bin/box64
-COPY --from=box64_8k_build /usr/local/bin/box64 /usr/local/bin/box64-8k
-COPY --from=box64_16k_build /usr/local/bin/box64 /usr/local/bin/box64-16k
-COPY --from=box64_64k_build /usr/local/bin/box64 /usr/local/bin/box64-64k
+COPY --from=box64_custom_build /tmp/install8k/usr/local/bin/box64 /usr/local/bin/box64-8k
+COPY --from=box64_custom_build /tmp/install16k/usr/local/bin/box64 /usr/local/bin/box64-16k
+COPY --from=box64_custom_build /tmp/install64k/usr/local/bin/box64 /usr/local/bin/box64-64k
 
 RUN set -x \
 	# Install, update & upgrade packages
