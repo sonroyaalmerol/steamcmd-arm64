@@ -51,7 +51,7 @@ jobs:
           flavor: latest=false
 
       - name: Docker - Metadata
-        id: meta-root
+        id: meta_root
         uses: docker/metadata-action@v5
         with:
           images: |
@@ -74,11 +74,11 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
 
       - name: Docker - Build / Push
-        id: docker_build
+        id: docker_build_root
         uses: docker/build-push-action@v5
         with:
           platforms: linux/arm64
           file: bullseye/Dockerfile
           target: bullseye-root
           push: true
-          tags: ${{ steps.meta-root.outputs.tags }}
+          tags: ${{ steps.meta_root.outputs.tags }}
