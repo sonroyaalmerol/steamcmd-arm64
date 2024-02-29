@@ -59,7 +59,7 @@ RUN set -x \
 	&& git clone https://github.com/ptitSeb/box64.git \
     && mkdir /box64/build \
 	&& cd /box64/build \
-	&& cmake .. -DARM_DYNAREC=ON -DPAGE8K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	&& cmake .. -DARM_DYNAREC=ON -DPAGE8K=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 	&& make -j$(nproc) \
 	&& make install DESTDIR=/tmp/install
 
@@ -82,7 +82,7 @@ RUN set -x \
 	&& git clone https://github.com/ptitSeb/box64.git \
     && mkdir /box64/build \
 	&& cd /box64/build \
-	&& cmake .. -DARM_DYNAREC=ON -DPAGE16K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	&& cmake .. -DARM_DYNAREC=ON -DPAGE16K=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 	&& make -j$(nproc) \
 	&& make install DESTDIR=/tmp/install
 
@@ -105,7 +105,7 @@ RUN set -x \
 	&& git clone https://github.com/ptitSeb/box64.git \
     && mkdir /box64/build \
 	&& cd /box64/build \
-	&& cmake .. -DARM_DYNAREC=ON -DPAGE64K=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	&& cmake .. -DARM_DYNAREC=ON -DPAGE64K=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 	&& make -j$(nproc) \
 	&& make install DESTDIR=/tmp/install
 
