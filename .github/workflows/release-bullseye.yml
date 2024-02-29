@@ -50,46 +50,8 @@ jobs:
             type=raw,value=steam-bullseye-${{ steps.current-date.outputs.TODAY }}
           flavor: latest=false
 
-      - name: Docker - Build / Push
-        id: docker_build
-        uses: docker/build-push-action@v5
-        with:
-          platforms: linux/arm64
-          file: bullseye/Dockerfile
-          target: bullseye
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-  
-  release-root:
-    name: Release Root - Docker image
-    runs-on: ARM64
-    steps:
-      - name: Get current date
-        id: current-date
-        run: |
-          echo "TODAY=$(date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Docker - Login
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Docker - GHCR Login
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Docker - Metadata
-        id: meta
+        id: meta-root
         uses: docker/metadata-action@v5
         with:
           images: |
@@ -107,6 +69,16 @@ jobs:
         with:
           platforms: linux/arm64
           file: bullseye/Dockerfile
-          target: bullseye-root
+          target: bullseye
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+
+      - name: Docker - Build / Push
+        id: docker_build
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/arm64
+          file: bullseye/Dockerfile
+          target: bullseye-root
+          push: true
+          tags: ${{ steps.meta-root.outputs.tags }}
