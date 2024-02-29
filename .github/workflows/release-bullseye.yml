@@ -50,7 +50,7 @@ jobs:
             type=raw,value=steam-bullseye-${{ steps.current-date.outputs.TODAY }}
           flavor: latest=false
 
-      - name: Docker - Metadata
+      - name: Docker - Metadata (Root)
         id: meta_root
         uses: docker/metadata-action@v5
         with:
@@ -73,7 +73,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 
-      - name: Docker - Build / Push
+      - name: Docker - Build / Push (Root)
         id: docker_build_root
         uses: docker/build-push-action@v5
         with:
