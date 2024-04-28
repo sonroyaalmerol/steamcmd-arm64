@@ -119,7 +119,7 @@ RUN set -x \
 		ca-certificates=20230311 \
 		nano=7.2-1 \
 		curl=7.88.1-10+deb12u5 \
-		locales=2.36-9+deb12u4 \
+		locales=2.36-9+deb12u6 \
   		wget=1.21.3-1+b1 \
 		gnupg=2.2.40-1.1 \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
