@@ -113,8 +113,8 @@ RUN set -x \
 	&& dpkg --add-architecture i386 \
 	&& apt-get update \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		libc6:i386=2.36-9+deb12u4 \
-		libc6:armhf=2.36-9+deb12u4 \
+		libc6:i386=2.36-9+deb12u6 \
+		libc6:armhf=2.36-9+deb12u6 \
 		libstdc++6:armhf=12.2.0-14 \
 		ca-certificates=20230311 \
 		nano=7.2-1 \
