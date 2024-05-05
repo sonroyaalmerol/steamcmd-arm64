@@ -113,13 +113,13 @@ RUN set -x \
 	&& dpkg --add-architecture i386 \
 	&& apt-get update \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		libc6:i386=2.31-13+deb11u9 \
-		libc6:armhf=2.31-13+deb11u9 \
+		libc6:i386=2.31-13+deb11u10 \
+		libc6:armhf=2.31-13+deb11u10 \
 		libstdc++6:armhf=10.2.1-6 \
 		ca-certificates=20210119 \
 		nano=5.4-2+deb11u2 \
 		curl=7.74.0-1.3+deb11u11 \
-		locales=2.31-13+deb11u9 \
+		locales=2.31-13+deb11u10 \
   		wget=1.21-1+deb11u1 \
 		gnupg=2.2.27-2+deb11u2 \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
