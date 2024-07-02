@@ -9,7 +9,7 @@ RUN set -x \
 	# Install, update & upgrade packages
 	&& apt-get update \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		qemu-user-static=1:7.2+dfsg-7+deb12u5 \
+		qemu-user-static=1:7.2+dfsg-7+deb12u6 \
 	&& rm -rf /var/lib/apt/lists/*
 
 ############################################################
