@@ -117,7 +117,7 @@ RUN set -x \
 		libc6:armhf=2.31-13+deb11u10 \
 		libstdc++6:armhf=10.2.1-6 \
 		ca-certificates=20210119 \
-		nano=5.4-2+deb11u2 \
+		nano=5.4-2+deb11u3 \
 		curl=7.74.0-1.3+deb11u11 \
 		locales=2.31-13+deb11u10 \
   		wget=1.21-1+deb11u1 \
