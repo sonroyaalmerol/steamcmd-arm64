@@ -165,7 +165,6 @@ RUN set -x \
 		libc6:i386 \
 		libstdc++6:i386 \
 		libc6:armhf \
-		libstdc++6:armhf \
 		ca-certificates \
 		nano \
 		curl \
