@@ -9,7 +9,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -x \
 	# Install, update & upgrade packages
 	&& apt-get update \
- 	&& -y --no-install-recommends --no-install-suggests \
+ 	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		git \
 		libglib2.0-dev \
 		libfdt-dev \
@@ -62,7 +62,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN set -x \
 	&& apt-get update \
-	&& -y --no-install-recommends --no-install-suggests \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
         git=1:2.30.2-1+deb11u2 \
 		ca-certificates=20210119 \
         build-essential=12.9 \
@@ -85,7 +85,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN set -x \
 	&& apt-get update \
-	&& -y --no-install-recommends --no-install-suggests \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
         git=1:2.30.2-1+deb11u2 \
 		ca-certificates=20210119 \
         build-essential=12.9 \
@@ -108,7 +108,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN set -x \
 	&& apt-get update \
-	&& -y --no-install-recommends --no-install-suggests \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		git=1:2.30.2-1+deb11u2 \
 		ca-certificates=20210119 \
 		build-essential=12.9 \
@@ -151,7 +151,7 @@ RUN set -x \
 	&& dpkg --add-architecture armhf \
 	&& dpkg --add-architecture i386 \
 	&& apt-get update \
- 	&& -y --no-install-recommends --no-install-suggests \
+ 	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		libc6:i386=2.31-13+deb11u10 \
 		libstdc++6:i386=10.2.1-6 \
 		libc6:armhf=2.31-13+deb11u10 \
@@ -167,7 +167,7 @@ RUN set -x \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list \
 	&& (wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg) \
 	&& apt-get update \
-	&& -y --no-install-recommends --no-install-suggests \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		box64 \
 		box86-generic-arm \
 	&& sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \

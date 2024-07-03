@@ -9,7 +9,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -x \
 	# Install, update & upgrade packages
 	&& apt-get update \
- 	&& -y --no-install-recommends --no-install-suggests \
+ 	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		git \
 		libglib2.0-dev \
 		libfdt-dev \
