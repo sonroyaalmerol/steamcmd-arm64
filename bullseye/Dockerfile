@@ -161,7 +161,6 @@ RUN set -x \
 	&& apt-get update \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		libc6:i386 \
-		libstdc++6:i386 \
 		libc6:armhf \
 		ca-certificates \
 		nano \
