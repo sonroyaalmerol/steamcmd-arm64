@@ -64,14 +64,15 @@ ENV DEBIAN_FRONTEND noninteractive
 # Set SHELL option explicitly
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+# hadolint ignore=DL3008
 RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
-        git=1:2.39.2-1.1 \
-		ca-certificates=20230311 \
-        build-essential=12.9 \
-        cmake=3.25.1-1 \
-		mold=1.10.1+dfsg-1 \
+        git \
+		ca-certificates \
+        build-essential \
+        cmake \
+		mold \
 	&& git clone https://github.com/ptitSeb/box64.git \
     && mkdir /box64/build \
 	&& cd /box64/build \
@@ -88,14 +89,15 @@ ENV DEBIAN_FRONTEND noninteractive
 # Set SHELL option explicitly
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+# hadolint ignore=DL3008
 RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
-        git=1:2.39.2-1.1 \
-		ca-certificates=20230311 \
-        build-essential=12.9 \
-        cmake=3.25.1-1 \
-		mold=1.10.1+dfsg-1 \
+        git \
+		ca-certificates \
+        build-essential \
+        cmake \
+		mold \
 	&& git clone https://github.com/ptitSeb/box64.git \
     && mkdir /box64/build \
 	&& cd /box64/build \
@@ -112,14 +114,15 @@ ENV DEBIAN_FRONTEND noninteractive
 # Set SHELL option explicitly
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+# hadolint ignore=DL3008
 RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		git=1:2.39.2-1.1 \
-		ca-certificates=20230311 \
-		build-essential=12.9 \
-		cmake=3.25.1-1 \
-		mold=1.10.1+dfsg-1 \
+		git \
+		ca-certificates \
+		build-essential \
+		cmake \
+		mold \
 	&& git clone https://github.com/ptitSeb/box64.git \
 	&& mkdir /box64/build \
 	&& cd /box64/build \
@@ -159,17 +162,16 @@ RUN set -x \
 	&& dpkg --add-architecture i386 \
 	&& apt-get update \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		libc6:i386=2.36-9+deb12u7 \
-		libstdc++6:i386=12.2.0-14 \
-		libc6:armhf=2.36-9+deb12u7 \
-		libstdc++6:armhf=12.2.0-14 \
-		glibc=2.36-9+deb12u7 \
-		ca-certificates=20230311 \
-		nano=7.2-1+deb12u1 \
-		curl=7.88.1-10+deb12u6 \
-		locales=2.36-9+deb12u7 \
-  		wget=1.21.3-1+b1 \
-		gnupg=2.2.40-1.1 \
+		libc6:i386 \
+		libstdc++6:i386 \
+		libc6:armhf \
+		libstdc++6:armhf \
+		ca-certificates \
+		nano \
+		curl \
+		locales \
+  		wget \
+		gnupg \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
 	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list \
