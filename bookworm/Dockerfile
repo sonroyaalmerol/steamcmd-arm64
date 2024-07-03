@@ -18,6 +18,7 @@ RUN set -x \
 		ninja-build \
 		build-essential \
 		python3-venv \
+		python3-tomli \
 		flex \
 		bison \
 		libaio-dev \
