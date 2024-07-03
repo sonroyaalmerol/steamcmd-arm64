@@ -5,16 +5,55 @@ ENV DEBIAN_FRONTEND noninteractive
 # Set SHELL option explicitly
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+# hadolint ignore=DL3008
 RUN set -x \
 	# Install, update & upgrade packages
 	&& apt-get update \
- 	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		qemu-user-static=1:7.2+dfsg-7+deb12u6 \
-	&& rm -rf /var/lib/apt/lists/*
+ 	&& -y --no-install-recommends --no-install-suggests \
+		git \
+		libglib2.0-dev \
+		libfdt-dev \
+		libpixman-1-dev \
+		zlib1g-dev \
+		ninja-build \
+		build-essential \
+		python3-venv \
+		flex \
+		bison \
+		libaio-dev \
+        libattr1-dev \
+        libbrlapi-dev \
+        libcacard-dev \
+        libcap-ng-dev \
+        libgcrypt20-dev \
+        libgnutls28-dev \
+        libgtk-3-dev \
+        libiscsi-dev \
+        liblttng-ust-dev \
+        libncurses5-dev \
+        libnfs-dev \
+        libpng-dev \
+        librados-dev \
+        libsdl2-dev \
+        libseccomp-dev \
+        liburcu-dev \
+        libusb-1.0-0-dev \
+        libvdeplug-dev \
+        libvte-2.91-dev \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& git clone https://gitlab.com/qemu-project/qemu.git \
+	&& cd qemu \
+	&& git checkout master -b stable-9.0 \ 
+	&& git submodule update --init --recursive \
+	&& ./configure \
+		--prefix=/build/qemu-user-static \
+		--static \
+		--disable-system \
+	&& make -j$(nproc)
 
 ############################################################
 
-FROM arm64v8/python:slim-bookworm as box64_8k_build
+FROM arm64v8/python:slim-bookworm as box64_m1
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -28,16 +67,17 @@ RUN set -x \
 		ca-certificates=20230311 \
         build-essential=12.9 \
         cmake=3.25.1-1 \
+		mold=1.10.1+dfsg-1 \
 	&& git clone https://github.com/ptitSeb/box64.git \
     && mkdir /box64/build \
 	&& cd /box64/build \
-	&& cmake .. -DARM_DYNAREC=ON -DPAGE8K=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-	&& make -j$(nproc) \
+	&& cmake .. -D M1=1 -D CMAKE_BUILD_TYPE=RelWithDebInfo -D WITH_MOLD=1 \
+	&& mold -run make -j$(nproc) \
 	&& make install DESTDIR=/tmp/install
 
 ############################################################
 
-FROM arm64v8/python:slim-bookworm as box64_16k_build
+FROM arm64v8/python:slim-bookworm as box64_rpi5
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -51,16 +91,17 @@ RUN set -x \
 		ca-certificates=20230311 \
         build-essential=12.9 \
         cmake=3.25.1-1 \
+		mold=1.10.1+dfsg-1 \
 	&& git clone https://github.com/ptitSeb/box64.git \
     && mkdir /box64/build \
 	&& cd /box64/build \
-	&& cmake .. -DARM_DYNAREC=ON -DPAGE16K=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-	&& make -j$(nproc) \
+	&& cmake .. -D RPI5ARM64=1 -D CMAKE_BUILD_TYPE=RelWithDebInfo -D WITH_MOLD=1 \
+	&& mold -run make -j$(nproc) \
 	&& make install DESTDIR=/tmp/install
 
 ############################################################
 
-FROM arm64v8/python:slim-bookworm as box64_64k_build
+FROM arm64v8/python:slim-bookworm as box64_adlink
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -70,15 +111,16 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
-        git=1:2.39.2-1.1 \
+		git=1:2.39.2-1.1 \
 		ca-certificates=20230311 \
-        build-essential=12.9 \
-        cmake=3.25.1-1 \
+		build-essential=12.9 \
+		cmake=3.25.1-1 \
+		mold=1.10.1+dfsg-1 \
 	&& git clone https://github.com/ptitSeb/box64.git \
-    && mkdir /box64/build \
+	&& mkdir /box64/build \
 	&& cd /box64/build \
-	&& cmake .. -DARM_DYNAREC=ON -DPAGE64K=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-	&& make -j$(nproc) \
+	&& cmake .. -D ADLINK=1 -D CMAKE_BUILD_TYPE=RelWithDebInfo -D WITH_MOLD=1 \
+	&& mold -run make -j$(nproc) \
 	&& make install DESTDIR=/tmp/install
 
 ############################################################
@@ -102,9 +144,9 @@ ENV DEBUGGER "/usr/local/bin/box86"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 COPY --from=qemu_build /usr/bin/qemu-i386-static /usr/bin/qemu-i386-static
-COPY --from=box64_8k_build /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-8k
-COPY --from=box64_16k_build /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-16k
-COPY --from=box64_64k_build /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-64k
+COPY --from=box64_m1 /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-m1
+COPY --from=box64_rpi5 /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-rpi5
+COPY --from=box64_adlink /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-adlink
 
 # hadolint ignore=DL3008
 RUN set -x \
@@ -114,6 +156,7 @@ RUN set -x \
 	&& apt-get update \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		libc6:i386=2.36-9+deb12u7 \
+		libstdc++6:i386=12.2.0-14 \
 		libc6:armhf=2.36-9+deb12u7 \
 		libstdc++6:armhf=12.2.0-14 \
 		ca-certificates=20230311 \
@@ -150,7 +193,11 @@ RUN set -x \
 	# Symlink steamclient.so; So misconfigured dedicated servers can find it
 	&& mkdir -p /usr/lib/x86_64-linux-gnu \
  	&& ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "/usr/lib/x86_64-linux-gnu/steamclient.so" \
-	&& rm -rf /var/lib/apt/lists/*
+	&& rm -rf /var/lib/apt/lists/* \
+	&& mv /usr/local/bin/box64 /usr/local/bin/box64-generic
+
+COPY box64.sh /usr/local/bin/box64
+RUN chmod +x /usr/local/bin/box64
 
 FROM build_stage AS bookworm-root
 WORKDIR ${STEAMCMDDIR}
