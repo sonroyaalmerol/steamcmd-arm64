@@ -53,7 +53,8 @@ RUN set -x \
 		--disable-system \
 		--disable-bsd-user \
 		--target-list=i386-linux-user \
-	&& make -j$(nproc)
+	&& make -j$(nproc) \
+	&& make install
 
 ############################################################
 
@@ -160,6 +161,7 @@ RUN set -x \
 		libstdc++6:i386=10.2.1-6 \
 		libc6:armhf=2.31-13+deb11u10 \
 		libstdc++6:armhf=10.2.1-6 \
+		glibc=2.31-13+deb11u10 \
 		ca-certificates=20210119 \
 		nano=5.4-2+deb11u3 \
 		curl=7.74.0-1.3+deb11u12 \
