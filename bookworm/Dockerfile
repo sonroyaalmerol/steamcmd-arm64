@@ -50,6 +50,7 @@ RUN set -x \
 		--prefix=/build/qemu-user-static \
 		--static \
 		--disable-system \
+		--enable-static-nss \
 	&& make -j$(nproc)
 
 ############################################################

@@ -72,6 +72,8 @@ jobs:
           target: bullseye
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Docker - Build / Push (Root)
         id: docker_build_root
@@ -82,3 +84,5 @@ jobs:
           target: bullseye-root
           push: true
           tags: ${{ steps.meta_root.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
