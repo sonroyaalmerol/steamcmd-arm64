@@ -8,7 +8,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # hadolint ignore=DL3008
 RUN set -x \
 	# Install, update & upgrade packages
-	&& echo "deb http://deb.debian.org/debian bullseye-backports main contrib non-free" | sudo tee -a /etc/apt/sources.list \
+	&& echo "deb http://deb.debian.org/debian bullseye-backports main contrib non-free" | tee -a /etc/apt/sources.list \
 	&& apt-get update \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		git \
