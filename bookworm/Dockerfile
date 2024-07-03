@@ -50,7 +50,8 @@ RUN set -x \
 		--prefix=/build/qemu-user-static \
 		--static \
 		--disable-system \
-		--enable-static-nss \
+		--disable-bsd-user \
+		--target=i386-linux-user \
 	&& make -j$(nproc)
 
 ############################################################
