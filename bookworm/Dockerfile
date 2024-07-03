@@ -51,7 +51,7 @@ RUN set -x \
 		--static \
 		--disable-system \
 		--disable-bsd-user \
-		--target_list=i386-linux-user \
+		--target-list=i386-linux-user \
 	&& make -j$(nproc)
 
 ############################################################
