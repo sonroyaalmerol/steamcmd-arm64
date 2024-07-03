@@ -144,7 +144,7 @@ ENV DEBUGGER "/usr/local/bin/box86"
 # Set SHELL option explicitly
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY --from=qemu_build /usr/bin/qemu-i386-static /usr/bin/qemu-i386-static
+COPY --from=qemu_build /build/qemu-user-static/bin/qemu-i386 /usr/bin/qemu-i386-static
 COPY --from=box64_m1 /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-m1
 COPY --from=box64_rpi5 /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-rpi5
 COPY --from=box64_adlink /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-adlink
