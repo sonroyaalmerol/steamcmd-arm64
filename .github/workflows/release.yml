@@ -3,7 +3,7 @@ name: Bookworm Images
 on:  # yamllint disable-line rule:truthy
   push:
     branches: [master]
-    paths: ['bookworm/Dockerfile']
+    paths: ['bookworm/Dockerfile', 'box64.sh']
   schedule:
     - cron: '0 0 * * 0'
   workflow_dispatch:
