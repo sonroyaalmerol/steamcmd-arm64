@@ -208,11 +208,9 @@ RUN set -x \
 		libglib2.0-0 \
 		libglib2.0-0:i386 \
 		openssl \
-		openssl:i386 \
 		ca-certificates \
 		nano \
 		curl \
-		curl:i386 \
 		locales \
   		wget \
 		gnupg \
