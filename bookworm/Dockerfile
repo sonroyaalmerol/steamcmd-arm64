@@ -27,7 +27,6 @@ RUN set -x \
         libcacard-dev \
         libcap-ng-dev \
         libgcrypt20-dev \
-        libgnutls28-dev \
         libgtk-3-dev \
         libiscsi-dev \
         liblttng-ust-dev \
@@ -41,6 +40,37 @@ RUN set -x \
         libusb-1.0-0-dev \
         libvdeplug-dev \
         libvte-2.91-dev \
+		libc-dev-bin \
+		libcurl4-openssl-dev \
+		multipath-tools \
+		liburing-dev \
+		librdmacm-dev \
+		libbpf-dev \
+		librbd-dev \
+		pcscd \
+		libccid \
+		libepoxy-dev \
+		libssh-dev \
+		liblzo2-dev \
+		libsnappy-dev \
+		libbz2-dev \
+		libzstd-dev \
+		libqpdf-dev \
+		libnuma-dev \
+		libcapstone-dev \
+		libpmem-dev \
+		libdaxctl-dev \
+		libudev-dev \
+		fuse \
+		libdw-dev \
+		libnghttp2-dev \
+		librtmp-dev \
+		libssh2-1-dev \
+		libpsl-dev \
+		libkrb5-dev \
+		libldap2-dev \
+		libp11-kit-dev \
+		libunistring-dev \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& git clone https://gitlab.com/qemu-project/qemu.git \
 	&& cd qemu \
@@ -52,6 +82,13 @@ RUN set -x \
 		--disable-system \
 		--disable-bsd-user \
 		--target-list=i386-linux-user \
+		--enable-bzip2 \
+		--enable-libssh \
+		--enable-nettle \
+		--enable-curses \
+		--enable-curl \
+		--enable-lzo \
+		--enable-numa \
 	&& make -j$(nproc) \
 	&& make install
 
@@ -164,9 +201,18 @@ RUN set -x \
  	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		libc6:i386 \
 		libc6:armhf \
+		libcurl4 \
+		libcurl4:i386 \
+		libnuma1 \
+		libnuma1:i386 \
+		libglib2.0-0 \
+		libglib2.0-0:i386 \
+		openssl \
+		openssl:i386 \
 		ca-certificates \
 		nano \
 		curl \
+		curl:i386 \
 		locales \
   		wget \
 		gnupg \
