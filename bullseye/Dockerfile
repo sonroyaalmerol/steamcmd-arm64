@@ -1,100 +1,3 @@
-FROM arm64v8/debian:bullseye-slim as qemu_build
-
-ENV DEBIAN_FRONTEND noninteractive
-
-# Set SHELL option explicitly
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-# hadolint ignore=DL3008
-RUN set -x \
-	# Install, update & upgrade packages
-	&& echo "deb http://deb.debian.org/debian bullseye-backports main contrib non-free" | tee -a /etc/apt/sources.list \
-	&& apt-get update \
- 	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		git \
-		libglib2.0-dev \
-		libfdt-dev \
-		libpixman-1-dev \
-		zlib1g-dev \
-		ninja-build \
-		build-essential \
-		python3-venv \
-		python3-tomli \
-		flex \
-		bison \
-		libaio-dev \
-		libattr1-dev \
-		libbrlapi-dev \
-		libcacard-dev \
-		libcap-ng-dev \
-		libgcrypt20-dev \
-		libgtk-3-dev \
-		libiscsi-dev \
-		liblttng-ust-dev \
-		libncurses5-dev \
-		libnfs-dev \
-		libpng-dev \
-		librados-dev \
-		libsdl2-dev \
-		libseccomp-dev \
-		liburcu-dev \
-		libusb-1.0-0-dev \
-		libvdeplug-dev \
-		libvte-2.91-dev \
-		libc-dev-bin \
-		libcurl4-openssl-dev \
-		multipath-tools \
-		liburing-dev \
-		librdmacm-dev \
-		libbpf-dev \
-		librbd-dev \
-		pcscd \
-		libccid \
-		libepoxy-dev \
-		libssh-dev \
-		liblzo2-dev \
-		libsnappy-dev \
-		libbz2-dev \
-		libzstd-dev \
-		libqpdf-dev \
-		libnuma-dev \
-		libcapstone-dev \
-		libpmem-dev \
-		libdaxctl-dev \
-		libudev-dev \
-		fuse \
-		libdw-dev \
-		libnghttp2-dev \
-		librtmp-dev \
-		libssh2-1-dev \
-		libpsl-dev \
-		libkrb5-dev \
-		libldap2-dev \
-		libp11-kit-dev \
-		libunistring-dev \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& git clone https://gitlab.com/qemu-project/qemu.git \
-	&& cd qemu \
-	&& git checkout master -b stable-9.0 \ 
-	&& git submodule update --init --recursive \
-	&& ./configure \
-		--prefix=/build/qemu-user-static \
-		--static \
-		--disable-system \
-		--disable-bsd-user \
-		--target-list=i386-linux-user \
-		--enable-bzip2 \
-		--enable-libssh \
-		--enable-nettle \
-		--enable-curses \
-		--enable-curl \
-		--enable-lzo \
-		--enable-numa \
-	&& make -j$(nproc) \
-	&& make install
-
-############################################################
-
 FROM arm64v8/python:slim-bullseye as box64_m1
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -185,7 +88,6 @@ ENV DEBUGGER "/usr/local/bin/box86"
 # Set SHELL option explicitly
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY --from=qemu_build /build/qemu-user-static/bin/qemu-i386 /usr/bin/qemu-i386-static
 COPY --from=box64_m1 /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-m1
 COPY --from=box64_rpi5 /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-rpi5
 COPY --from=box64_adlink /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-adlink
@@ -240,6 +142,7 @@ RUN set -x \
 	# Symlink steamclient.so; So misconfigured dedicated servers can find it
 	&& mkdir -p /usr/lib/x86_64-linux-gnu \
  	&& ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "/usr/lib/x86_64-linux-gnu/steamclient.so" \
+ 	&& ln -s "${STEAMCMDDIR}/linux32/steamclient.so" "/usr/lib/i386-linux-gnu/steamclient.so" \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& mv /usr/local/bin/box64 /usr/local/bin/box64-generic
 

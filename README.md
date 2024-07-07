@@ -1,5 +1,8 @@
 [![](https://img.shields.io/codacy/grade/6a8e207cf98246169e633d6f22da9d9c)](https://hub.docker.com/r/sonroyaalmerol/steamcmd-arm64/) [![Docker Pulls](https://img.shields.io/docker/pulls/sonroyaalmerol/steamcmd-arm64.svg)](https://hub.docker.com/r/sonroyaalmerol/steamcmd-arm64/) [![](https://img.shields.io/docker/image-size/sonroyaalmerol/steamcmd-arm64)](https://img.shields.io/docker/image-size/sonroyaalmerol/steamcmd-arm64) [![Bookworm Images](https://github.com/sonroyaalmerol/steamcmd-arm64/actions/workflows/release.yml/badge.svg)](https://github.com/sonroyaalmerol/steamcmd-arm64/actions/workflows/release.yml) [![Bullseye Images](https://github.com/sonroyaalmerol/steamcmd-arm64/actions/workflows/release-bullseye.yml/badge.svg)](https://github.com/sonroyaalmerol/steamcmd-arm64/actions/workflows/release-bullseye.yml)
 
+> [!IMPORTANT]
+> QEMU user static binaries has been removed from the image from the 2024-07-07 tag and onwards. See issue [#7](https://github.com/sonroyaalmerol/steamcmd-arm64/issues/7)
+
 # Supported tags and respective `Dockerfile` links
   -	[`steam`, `steam-bookworm`, `latest` (*bookworm/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/bookworm/Dockerfile)
   -	[`root`, `root-bookworm` (*bookworm/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/bookworm/Dockerfile)
@@ -14,8 +17,6 @@ The Steam Console Client or SteamCMD is a command-line version of the Steam clie
 
 # What makes this compatible with ARM64?
 This image has [Box64](https://github.com/ptitSeb/box64) and [Box86](https://github.com/ptitSeb/box86) integrated. By default, SteamCMD will be using Box86 when running via the steamcmd.sh shell script. Box86 is needed as SteamCMD itself a 32-bit binary application. For 64-bit server binaries, please use Box64 `/usr/local/bin/box64`. For tweaking, environment variables could be used for both [Box64](https://github.com/ptitSeb/box64/blob/main/docs/USAGE.md) and [Box86](https://github.com/ptitSeb/box86/blob/master/docs/USAGE.md).
-
-You may also opt to use qemu-i386-static instead of Box86 for better compatibility (but slower performance) by using `/usr/bin/qemu-i386-static` as value for the `DEBUGGER` env variable.
 
 # How to use this image
 > [!IMPORTANT]
@@ -42,9 +43,34 @@ This setup is necessary if you have to download a non-anonymous appID or upload 
 https://hub.docker.com/r/cm2network/steampipe/
 
 ## Configuration
-This image includes the `nano` text editor for convenience. 
+This image includes the `nano` text editor for convenience.
 
 The `steamcmd.sh` can be found in the following directory: `/home/steam/steamcmd`
+
+For better Box64 compatibility, some dedicated servers need specific configurations for stability. The combination listed below might give you the best chance in exchange for performance. You may adjust them as needed. No custom Box64 configurations have been set for this image by default. See [Box64 usage documentation](https://github.com/ptitSeb/box64/blob/main/docs/USAGE.md) for more info.
+
+```
+# Set these as env variables within the container
+export BOX64_DYNAREC_BIGBLOCK=0
+export BOX64_DYNAREC_SAFEFLAGS=2
+export BOX64_DYNAREC_STRONGMEM=3
+export BOX64_DYNAREC_FASTROUND=0
+export BOX64_DYNAREC_FASTNAN=0
+export BOX64_DYNAREC_X87DOUBLE=1
+```
+
+## Box64 Builds
+
+This image currently includes the following Box64 build variants for the following devices:
+
+ - Generic [`generic`]
+ - Raspberry Pi 5 [`rpi5`]
+ - M1 (M-Series) Mac [`m1`]
+ - ADLink Ampere Altra (Oracle ARM CPUs) [`adlink`]
+
+You may specify which variant to use with the `ARM64_DEVICE` environment variable. `generic` variant will be used by default.
+
+For more build variants, please create a new issue with your reasoning.
 
 ## Examples
 Images utilizing this base image:

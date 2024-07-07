@@ -4,6 +4,8 @@ if [[ -z "$ARM64_DEVICE" ]]; then
     echo "ARM64_DEVICE environment variable is not set, using generic Box64 build."
 fi
 
+export BOX64_ROLLING_LOG=1
+
 # Define the path to binaries based on the ARM64_DEVICE environment variable
 case $ARM64_DEVICE in
     rpi5)
