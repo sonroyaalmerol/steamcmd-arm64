@@ -123,7 +123,14 @@ RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		box64 \
+	&& apt-get download -y
 		box86-generic-arm \
+	&& dpkg-deb -R *.deb box86_tmp \
+	&& rm box86_tmp/usr/lib/i386-linux-gnu/libstdc++.so.6 \
+	&& dpkg-deb -b box86_tmp new_box86.deb \
+	&& dpkg -i new_box86.deb \
+	&& rm -rf *.deb \
+	&& rm -rf box86_tmp \
 	&& sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
 	&& dpkg-reconfigure --frontend=noninteractive locales \
 	# Create unprivileged user
