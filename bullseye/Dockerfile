@@ -123,7 +123,7 @@ RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		box64 \
-	&& apt-get download -y
+	&& apt-get download -y \
 		box86-generic-arm \
 	&& dpkg-deb -R *.deb box86_tmp \
 	&& rm box86_tmp/usr/lib/i386-linux-gnu/libstdc++.so.6 \
