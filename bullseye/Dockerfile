@@ -1,4 +1,4 @@
-FROM arm64v8/python:slim-bullseye as box64_m1
+FROM aarm64v8/debian:bullseye-slim as box64_m1
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -7,22 +7,21 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN set -x \
+	# Install, update & upgrade packages
+	&& apt-get update \
+ 	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		ca-certificates \
+  		wget \
+		gnupg \
+	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
+	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
-        git \
-		ca-certificates \
-        build-essential \
-        cmake \
-	&& git clone https://github.com/ptitSeb/box64.git \
-    && mkdir /box64/build \
-	&& cd /box64/build \
-	&& cmake .. -D M1=1 -D CMAKE_BUILD_TYPE=RelWithDebInfo \
-	&& make -j$(nproc) \
-	&& make install DESTDIR=/tmp/install
+		box64-m1
 
 ############################################################
 
-FROM arm64v8/python:slim-bullseye as box64_rpi5
+FROM arm64v8/debian:bullseye-slim as box64_rpi5_4k
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -31,18 +30,86 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN set -x \
+	# Install, update & upgrade packages
+	&& apt-get update \
+ 	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		ca-certificates \
+  		wget \
+		gnupg \
+	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
+	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
-        git \
+		box64-rpi5arm64
+
+############################################################
+
+FROM arm64v8/debian:bullseye-slim as box64_rpi5_16k
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Set SHELL option explicitly
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# hadolint ignore=DL3008
+RUN set -x \
+	# Install, update & upgrade packages
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		ca-certificates \
-        build-essential \
-        cmake \
-	&& git clone https://github.com/ptitSeb/box64.git \
-    && mkdir /box64/build \
-	&& cd /box64/build \
-	&& cmake .. -D RPI5ARM64=1 -D CMAKE_BUILD_TYPE=RelWithDebInfo \
-	&& make -j$(nproc) \
-	&& make install DESTDIR=/tmp/install
+		wget \
+		gnupg \
+	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
+	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		box64-rpi5arm64ps16k
+
+############################################################
+
+FROM arm64v8/debian:bullseye-slim as box64_rpi4
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Set SHELL option explicitly
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# hadolint ignore=DL3008
+RUN set -x \
+	# Install, update & upgrade packages
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		ca-certificates \
+		wget \
+		gnupg \
+	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
+	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		box64-rpi4arm64
+
+############################################################
+
+FROM arm64v8/debian:bullseye-slim as box64_rpi3
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Set SHELL option explicitly
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# hadolint ignore=DL3008
+RUN set -x \
+	# Install, update & upgrade packages
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		ca-certificates \
+		wget \
+		gnupg \
+	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
+	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		box64-rpi3arm64
 
 ############################################################
 
@@ -88,8 +155,11 @@ ENV DEBUGGER "/usr/local/bin/box86"
 # Set SHELL option explicitly
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY --from=box64_m1 /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-m1
-COPY --from=box64_rpi5 /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-rpi5
+COPY --from=box64_m1 /usr/local/bin/box64 /usr/local/bin/box64-m1
+COPY --from=box64_rpi5_4k /usr/local/bin/box64 /usr/local/bin/box64-rpi5
+COPY --from=box64_rpi5_16k /usr/local/bin/box64 /usr/local/bin/box64-rpi5-16k
+COPY --from=box64_rpi4 /usr/local/bin/box64 /usr/local/bin/box64-rpi4
+COPY --from=box64_rpi3 /usr/local/bin/box64 /usr/local/bin/box64-rpi3
 COPY --from=box64_adlink /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-adlink
 
 # hadolint ignore=DL3008

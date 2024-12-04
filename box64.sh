@@ -11,6 +11,15 @@ case $ARM64_DEVICE in
     rpi5)
         BINARY_PATH="/usr/local/bin/box64-rpi5"
         ;;
+    rpi5_16k)
+        BINARY_PATH="/usr/local/bin/box64-rpi5-16k"
+        ;;
+    rpi4)
+        BINARY_PATH="/usr/local/bin/box64-rpi4"
+        ;;
+    rpi3)
+        BINARY_PATH="/usr/local/bin/box64-rpi3"
+        ;;
     m1)
         BINARY_PATH="/usr/local/bin/box64-m1"
         ;;
