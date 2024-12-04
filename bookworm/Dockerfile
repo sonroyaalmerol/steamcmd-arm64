@@ -44,7 +44,7 @@ RUN set -x \
 
 ############################################################
 
-FROM aarm64v8/debian:bookworm-slim as box64_rpi5_16k
+FROM arm64v8/debian:bookworm-slim as box64_rpi5_16k
 
 ENV DEBIAN_FRONTEND noninteractive
 
