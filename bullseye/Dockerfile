@@ -1,4 +1,4 @@
-FROM aarm64v8/debian:bullseye-slim as box64_m1
+FROM arm64v8/debian:bullseye-slim as box64_m1
 
 ENV DEBIAN_FRONTEND noninteractive
 
