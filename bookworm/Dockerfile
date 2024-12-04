@@ -197,8 +197,7 @@ RUN set -x \
 	&& apt-get download -y \
 		box86-generic-arm \
 	&& dpkg-deb -R *.deb box86_tmp \
-	&& ls -al box86_tmp \
-	&& rm box86_tmp/usr/lib/i386-linux-gnu/libstdc++.so* \
+	&& rm -rf box86_tmp/usr/lib/i386-linux-gnu/libstdc++.so* \
 	&& dpkg-deb -b box86_tmp new_box86.deb \
 	&& dpkg -i new_box86.deb \
 	&& rm -rf *.deb \
