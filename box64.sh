@@ -17,6 +17,9 @@ case $ARM64_DEVICE in
     rpi4)
         BINARY_PATH="/usr/local/bin/box64-rpi4"
         ;;
+    rpi4-pre3)
+        BINARY_PATH="/usr/local/bin/box64-rpi4-0_2_7"
+        ;;
     rpi3)
         BINARY_PATH="/usr/local/bin/box64-rpi3"
         ;;
