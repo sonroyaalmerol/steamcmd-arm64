@@ -173,6 +173,8 @@ ENV DEBIAN_FRONTEND noninteractive
 
 ENV DEBUGGER "/usr/local/bin/box86"
 
+ENV LD_LIBRARY_PATH "${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu"
+
 # Set SHELL option explicitly
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -245,7 +247,8 @@ RUN set -x \
  	&& ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "/usr/lib/x86_64-linux-gnu/steamclient.so" \
  	&& ln -s "${STEAMCMDDIR}/linux32/steamclient.so" "/usr/lib/i386-linux-gnu/steamclient.so" \
 	&& rm -rf /var/lib/apt/lists/* \
-	&& mv /usr/local/bin/box64 /usr/local/bin/box64-generic
+	&& mv /usr/local/bin/box64 /usr/local/bin/box64-generic \
+	&& (for file in /usr/lib/box64-x86_64-linux-gnu/*; do [ -e "/usr/lib/x86_64-linux-gnu/$(basename "$file")" ] || ln -s "$file" /usr/lib/x86_64-linux-gnu/; done)
 
 COPY box64.sh /usr/local/bin/box64
 RUN chmod +x /usr/local/bin/box64
