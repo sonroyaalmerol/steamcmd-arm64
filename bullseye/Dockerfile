@@ -209,6 +209,8 @@ RUN set -x \
 		locales \
   		wget \
 		gnupg \
+		binutils \
+		zstd \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
 	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list \
@@ -218,11 +220,15 @@ RUN set -x \
 		box64 \
 	&& apt-get download -y \
 		box86-generic-arm \
-	&& dpkg-deb -R *.deb box86_tmp \
+	&& ar x *.deb \
+	&& zstd -d < control.tar.zst | xz > control.tar.xz \
+	&& zstd -d < data.tar.zst | xz > data.tar.xz \
+	&& ar -m -c -a sdsd ./box86-unzst.deb debian-binary control.tar.xz data.tar.xz \
+	&& dpkg-deb -R box86-unzst.deb box86_tmp \
 	&& rm -rf box86_tmp/usr/lib/i386-linux-gnu/libstdc++.so* \
 	&& dpkg-deb -b box86_tmp new_box86.deb \
-	&& dpkg -i new_box86.deb \
-	&& rm -rf *.deb \
+	&& dpkg -i new_box86.deb  \
+	&& rm -rf *.deb control.tar.xz data.tar.xz control.tar.zst data.tar.zst \
 	&& rm -rf box86_tmp \
 	&& sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
 	&& dpkg-reconfigure --frontend=noninteractive locales \
