@@ -14,6 +14,8 @@ RUN set -x \
   		wget \
 		gnupg \
 		git \
+		patch \
+		build-essential \
 	&& git clone https://github.com/tmiland/dpkg-zstd-patches.git \
 	&& git clone https://git.dpkg.org/git/dpkg/dpkg.git \
 	&& cd dpkg \
