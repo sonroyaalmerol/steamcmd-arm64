@@ -1,4 +1,4 @@
-FROM arm64v8/debian:bullseye-slim as box64_m1
+FROM arm64v8/debian:bullseye-slim as zstd_dpkg_base
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -15,9 +15,30 @@ RUN set -x \
 		gnupg \
 		git \
 	&& git clone https://github.com/tmiland/dpkg-zstd-patches.git \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg_1.20.12_amd64.deb \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg-repack_1.47_all.deb \
+	&& git clone https://git.dpkg.org/git/dpkg/dpkg.git \
+	&& cd dpkg \
+	&& git checkout 1.20.12 \
+	&& cp -rp ../dpkg-zstd-patches/patches/0001-dpkg-Add-Zstandard-compression-and-decompression-sup.patch . \
+	&& patch -p1 -i 0001-dpkg-Add-Zstandard-compression-and-decompression-sup.patch \
+	&& ./autogen \
+	&& ./configure \
+	&& make -j$(nproc) \
+	&& make check \
+	&& dpkg-buildpackage -b -uc -us \
 	&& echo -e "Package: dpkg dpkg-repack\nPin: release *\nPin-Priority: -100" | tee /etc/apt/preferences.d/pin-dpkg \
+	&& cd ../
+
+############################################################
+
+FROM zstd_dpkg_base as box64_m1
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Set SHELL option explicitly
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# hadolint ignore=DL3008
+RUN set -x \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
 	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
 	&& apt-get update \
@@ -26,7 +47,7 @@ RUN set -x \
 
 ############################################################
 
-FROM arm64v8/debian:bullseye-slim as box64_rpi5_4k
+FROM zstd_dpkg_base as box64_rpi5_4k
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -35,17 +56,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN set -x \
-	# Install, update & upgrade packages
-	&& apt-get update \
- 	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		ca-certificates \
-  		wget \
-		gnupg \
-		git \
-	&& git clone https://github.com/tmiland/dpkg-zstd-patches.git \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg_1.20.12_amd64.deb \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg-repack_1.47_all.deb \
-	&& echo -e "Package: dpkg dpkg-repack\nPin: release *\nPin-Priority: -100" | tee /etc/apt/preferences.d/pin-dpkg \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
 	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
 	&& apt-get update \
@@ -54,7 +64,7 @@ RUN set -x \
 
 ############################################################
 
-FROM arm64v8/debian:bullseye-slim as box64_rpi5_16k
+FROM zstd_dpkg_base as box64_rpi5_16k
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -63,17 +73,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN set -x \
-	# Install, update & upgrade packages
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		ca-certificates \
-		wget \
-		gnupg \
-		git \
-	&& git clone https://github.com/tmiland/dpkg-zstd-patches.git \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg_1.20.12_amd64.deb \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg-repack_1.47_all.deb \
-	&& echo -e "Package: dpkg dpkg-repack\nPin: release *\nPin-Priority: -100" | tee /etc/apt/preferences.d/pin-dpkg \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
 	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
 	&& apt-get update \
@@ -82,7 +81,7 @@ RUN set -x \
 
 ############################################################
 
-FROM arm64v8/debian:bullseye-slim as box64_rpi4
+FROM zstd_dpkg_base as box64_rpi4
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -91,17 +90,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN set -x \
-	# Install, update & upgrade packages
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		ca-certificates \
-		wget \
-		gnupg \
-		git \
-	&& git clone https://github.com/tmiland/dpkg-zstd-patches.git \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg_1.20.12_amd64.deb \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg-repack_1.47_all.deb \
-	&& echo -e "Package: dpkg dpkg-repack\nPin: release *\nPin-Priority: -100" | tee /etc/apt/preferences.d/pin-dpkg \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
 	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
 	&& apt-get update \
@@ -110,7 +98,7 @@ RUN set -x \
 
 ############################################################
 
-FROM arm64v8/debian:bullseye-slim as box64_rpi4_0.2.7
+FROM zstd_dpkg_base as box64_rpi4_0.2.7
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -119,23 +107,12 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN set -x \
-	# Install, update & upgrade packages
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		ca-certificates \
-		wget \
-		gnupg \
-		git \
-	&& git clone https://github.com/tmiland/dpkg-zstd-patches.git \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg_1.20.12_amd64.deb \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg-repack_1.47_all.deb \
-	&& echo -e "Package: dpkg dpkg-repack\nPin: release *\nPin-Priority: -100" | tee /etc/apt/preferences.d/pin-dpkg \
 	&& wget --progress=dot:giga https://github.com/Pi-Apps-Coders/box64-debs/raw/064eb3cffe90fa40d5ab44325a90720c28aaae2b/debian/box64-rpi4arm64_0.2.7+20240521T063129.3882a98-1_arm64.deb -O ./box64-0.2.7.deb \
 	&& dpkg -i ./box64-0.2.7.deb
 
 ############################################################
 
-FROM arm64v8/debian:bullseye-slim as box64_rpi3
+FROM zstd_dpkg_base as box64_rpi3
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -144,17 +121,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN set -x \
-	# Install, update & upgrade packages
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		ca-certificates \
-		wget \
-		gnupg \
-		git \
-	&& git clone https://github.com/tmiland/dpkg-zstd-patches.git \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg_1.20.12_amd64.deb \
-	&& dpkg -i ./dpkg-zstd-patches/deb-packages/dpkg-repack_1.47_all.deb \
-	&& echo -e "Package: dpkg dpkg-repack\nPin: release *\nPin-Priority: -100" | tee /etc/apt/preferences.d/pin-dpkg \
 	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
 	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
 	&& apt-get update \
