@@ -67,7 +67,12 @@ export BOX64_DYNAREC_X87DOUBLE=1
 This image currently includes the following Box64 build variants for the following devices:
 
  - Generic [`generic`]
- - Raspberry Pi 5 [`rpi5`]
+ - Raspberry Pi 3 [`rpi3`]
+ - Raspberry Pi 4 [`rpi4`]
+ - Raspberry Pi 4 (pre-v0.3 Box64 build) [`rpi4-pre3`]
+ - Raspberry Pi 5 (4k page size) [`rpi5`]
+ - Raspberry Pi 5 (16k page size) [`rpi5-16k`]
+ - Orange Pi 5 (RK3588) [`rk3588`]
  - M1 (M-Series) Mac [`m1`]
  - ADLink Ampere Altra (Oracle ARM CPUs) [`adlink`]
 
