@@ -3,11 +3,14 @@
 > [!IMPORTANT]
 > QEMU user static binaries has been removed from the image from the 2024-07-07 tag and onwards. See issue [#7](https://github.com/sonroyaalmerol/steamcmd-arm64/issues/7). For those with hosts incompatible with 32-bit binaries (like Box86), please see [sonroyaalmerol/steam-depot-downloader](https://github.com/sonroyaalmerol/steam-depot-downloader) as an alternative.
 
+> [!IMPORTANT]  
+> `bullseye` builds have been deprecated. Old images will be available but will not be updated going forward.
+
 # Supported tags and respective `Dockerfile` links
   -	[`steam`, `steam-bookworm`, `latest` (*bookworm/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/bookworm/Dockerfile)
   -	[`root`, `root-bookworm` (*bookworm/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/bookworm/Dockerfile)
-  -	[`steam-bullseye`, `bullseye` (*bullseye/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/bullseye/Dockerfile)
-  -	[`root-bullseye` (*bullseye/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/bullseye/Dockerfile)
+  -	~~`steam-bullseye`, `bullseye` (*bullseye/Dockerfile*)~~
+  -	~~`root-bullseye` (*bullseye/Dockerfile*)~~
 
 > [!IMPORTANT]
 > New versions of the Docker image are built once a week to keep up with Box86 and Box64 updates. The rest of the installed packages are version pinned to ensure stability. Use a specific tag with a date if you want to pin a specific release.
