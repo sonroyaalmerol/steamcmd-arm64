@@ -133,6 +133,29 @@ RUN set -x \
 
 ############################################################
 
+FROM arm64v8/debian:bookworm-slim as box64_rk3588
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Set SHELL option explicitly
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# hadolint ignore=DL3008
+RUN set -x \
+	# Install, update & upgrade packages
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		ca-certificates \
+		wget \
+		gnupg \
+	&& wget --progress=dot:giga https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
+	&& (wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg) \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		box64-rk3588
+
+############################################################
+
 FROM arm64v8/python:slim-bookworm as box64_adlink
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -184,6 +207,7 @@ COPY --from=box64_rpi5_16k /usr/local/bin/box64 /usr/local/bin/box64-rpi5-16k
 COPY --from=box64_rpi4 /usr/local/bin/box64 /usr/local/bin/box64-rpi4
 COPY --from=box64_rpi4_0.2.7 /usr/local/bin/box64 /usr/local/bin/box64-rpi4-0_2_7
 COPY --from=box64_rpi3 /usr/local/bin/box64 /usr/local/bin/box64-rpi3
+COPY --from=box64_rk3588 /usr/local/bin/box64 /usr/local/bin/box64-rk3588
 COPY --from=box64_adlink /tmp/install/usr/local/bin/box64 /usr/local/bin/box64-adlink
 
 # hadolint ignore=DL3008
