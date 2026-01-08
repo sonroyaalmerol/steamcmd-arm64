@@ -57,7 +57,7 @@ RUN wget -q https://github.com/Pi-Apps-Coders/box64-debs/raw/064eb3cffe90fa40d5a
     && dpkg-deb -x legacy.deb /tmp/legacy && cp /tmp/legacy/usr/local/bin/box64 /box64-rpi4-0_2_7
 
 FROM --platform=linux/386 i386/debian:bookworm-slim AS bookworm_libs
-RUN apt-get update && apt-get install -y libc6 libstdc++6 libssl3 libcurl4 libglib2.0-0 libnuma1
+RUN apt-get update && apt-get install -y libc6 libssl3 libcurl4 libglib2.0-0 libnuma1
 
 # --- Final Build Stage ---
 FROM arm64v8/debian:trixie-slim AS build_stage
@@ -112,11 +112,7 @@ RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends box64 \
     && mv /usr/local/bin/box64 /usr/local/bin/box64-generic \
-    && apt-get download box86-generic-arm \
-    && dpkg-deb -R *.deb box86_tmp \
-    && rm -rf box86_tmp/usr/lib/i386-linux-gnu/libstdc++.so* \
-    && dpkg-deb -b box86_tmp new_box86.deb \
-    && dpkg --force-architecture -i new_box86.deb \
+    && apt-get install -y --no-install-recommends box86-generic-arm:armhf \
     && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen \
     && rm -rf *.deb box86_tmp /var/lib/apt/lists/*
 
