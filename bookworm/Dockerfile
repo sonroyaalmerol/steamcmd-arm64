@@ -66,6 +66,7 @@ ENV USER=steam \
     STEAMCMDDIR="/home/steam/steamcmd" \
     DEBIAN_FRONTEND=noninteractive \
     DEBUGGER="/usr/local/bin/box86" \
+    BOX86_BOX64="/usr/local/bin/box64-generic" \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
     LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 
