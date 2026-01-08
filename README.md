@@ -66,19 +66,25 @@ export BOX64_DYNAREC_X87DOUBLE=1
 
 ## Box64 Builds
 
-This image currently includes the following Box64 build variants for the following devices:
+This image currently includes specialized Box64 build variants optimized for various ARM64 devices. You may specify which variant to use with the `ARM64_DEVICE` environment variable. The `generic` variant will be used by default if the variable is not set or an invalid option is provided.
 
- - Generic [`generic`]
- - Raspberry Pi 3 [`rpi3`]
- - Raspberry Pi 4 [`rpi4`]
- - Raspberry Pi 4 (pre-v0.3 Box64 build) [`rpi4-pre3`]
- - Raspberry Pi 5 (4k page size) [`rpi5`]
- - Raspberry Pi 5 (16k page size) [`rpi5-16k`]
- - Orange Pi 5 (RK3588) [`rk3588`]
- - M1 (M-Series) Mac [`m1`]
- - ADLink Ampere Altra (Oracle ARM CPUs) [`adlink`]
-
-You may specify which variant to use with the `ARM64_DEVICE` environment variable. `generic` variant will be used by default.
+| Device / Architecture | `ARM64_DEVICE` Key |
+| :--- | :--- |
+| **Generic ARM64** | `generic` |
+| **Raspberry Pi 5 (4k page size)** | `rpi5` |
+| **Raspberry Pi 5 (16k page size)** | `rpi5_16k` |
+| **Raspberry Pi 4** | `rpi4` |
+| **Raspberry Pi 4 (Legacy v0.2.7)** | `rpi4-pre3` |
+| **Raspberry Pi 3** | `rpi3` |
+| **Orange Pi 5 / RK3588** | `rk3588` |
+| **RK3399** | `rk3399` |
+| **M1 / M-Series Macs (Asahi)** | `m1` |
+| **Snapdragon Oryon 1 (X1E80100/X1E78100)** | `sdoryon1` |
+| **Snapdragon 888** | `sd888` |
+| **Tegra X1** | `tegrax1` |
+| **Tegra T194** | `tegra_t194` |
+| **SolidRun LX2160A Honeycomb** | `lx2160a` |
+| **Android (BAD_SIGNAL build)** | `android` |
 
 For more build variants, please create a new issue with your reasoning.
 
