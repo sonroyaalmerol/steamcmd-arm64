@@ -7,8 +7,10 @@
 > `bullseye` builds have been deprecated. Old images will be available but will not be updated going forward.
 
 # Supported tags and respective `Dockerfile` links
-  -	[`steam`, `steam-bookworm`, `latest` (*bookworm/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/bookworm/Dockerfile)
-  -	[`root`, `root-bookworm` (*bookworm/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/bookworm/Dockerfile)
+  -	[`steam`, `steam-trixie`, `trixie`, `latest` (*trixie/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/trixie/Dockerfile)
+  -	[`root`, `root-trixie` (*trixie/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/trixie/Dockerfile)
+  -	[`steam-bookworm`, `bookworm` (*bookworm/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/bookworm/Dockerfile)
+  -	[`root-bookworm` (*bookworm/Dockerfile*)](https://github.com/sonroyaalmerol/steamcmd-arm64/blob/master/bookworm/Dockerfile)
   -	~~`steam-bullseye`, `bullseye` (*bullseye/Dockerfile*)~~
   -	~~`root-bullseye` (*bullseye/Dockerfile*)~~
 

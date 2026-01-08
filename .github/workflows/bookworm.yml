@@ -49,11 +49,11 @@ jobs:
             ghcr.io/${{ github.repository }}
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=steam
-            type=raw,value=steam-${{ steps.current-date.outputs.TODAY }}
             type=raw,value=steam-bookworm
             type=raw,value=steam-bookworm-${{ steps.current-date.outputs.TODAY }}
-          flavor: latest=true
+            type=raw,value=bookworm
+            type=raw,value=bookworm-${{ steps.current-date.outputs.TODAY }}
+          flavor: latest=false
 
       - name: Docker - Metadata (Root)
         id: meta_root
@@ -64,8 +64,6 @@ jobs:
             ghcr.io/${{ github.repository }}
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=root
-            type=raw,value=root-${{ steps.current-date.outputs.TODAY }}
             type=raw,value=root-bookworm
             type=raw,value=root-bookworm-${{ steps.current-date.outputs.TODAY }}
           flavor: latest=false
