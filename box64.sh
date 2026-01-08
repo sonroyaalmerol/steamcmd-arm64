@@ -32,9 +32,6 @@ case $ARM64_DEVICE in
     m1)
         BINARY_PATH="/usr/local/bin/box64-m1"
         ;;
-    adlink)
-        BINARY_PATH="/usr/local/bin/box64-adlink"
-        ;;
     tegrax1)
         BINARY_PATH="/usr/local/bin/box64-tegrax1"
         ;;
