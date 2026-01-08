@@ -242,7 +242,7 @@ RUN set -x \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		box64 \
 	&& apt-get download -y \
-		box86-generic-arm \
+		box86-generic-arm:armhf \
 	&& dpkg-deb -R *.deb box86_tmp \
 	&& rm -rf box86_tmp/usr/lib/i386-linux-gnu/libstdc++.so* \
 	&& dpkg-deb -b box86_tmp new_box86.deb \
