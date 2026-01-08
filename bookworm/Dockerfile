@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg \
     && apt-get update
 
-# --- Binary Extraction Stages (Parallelized) ---
+# --- Binary Extraction Stages ---
 FROM base-setup AS bin_m1
 RUN apt-get install -y box64-m1 && cp /usr/local/bin/box64 /box64-m1
 
@@ -95,7 +95,7 @@ COPY --from=bin_sd888 /box64-sd888 /usr/local/bin/box64-sd888
 COPY --from=bin_sdoryon1 /box64-sdoryon1 /usr/local/bin/box64-sdoryon1
 COPY --from=bin_adlink /box64-adlink /usr/local/bin/box64-adlink
 
-# System Setup: Multi-arch & Dependencies
+# System Setup
 RUN set -x \
     && dpkg --add-architecture armhf \
     && dpkg --add-architecture i386 \
@@ -105,7 +105,6 @@ RUN set -x \
         libcurl4 libcurl4:i386 libnuma1 libnuma1:i386 \
         libglib2.0-0 libglib2.0-0:i386 \
         openssl ca-certificates nano curl locales wget gnupg \
-    # Install Box64 (Generic) and Box86
     && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
     && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
     && wget -qO- https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list \
@@ -113,7 +112,6 @@ RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends box64 \
     && mv /usr/local/bin/box64 /usr/local/bin/box64-generic \
-    # Box86 Generic Install and i386 libstdc++ fix
     && apt-get download box86-generic-arm:armhf \
     && dpkg-deb -R *.deb box86_tmp \
     && rm -rf box86_tmp/usr/lib/i386-linux-gnu/libstdc++.so* \
@@ -121,7 +119,7 @@ RUN set -x \
     && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen \
     && rm -rf *.deb box86_tmp /var/lib/apt/lists/*
 
-# SteamCMD & User Setup
+# SteamCMD Setup
 RUN useradd -l -u "${PUID}" -m "${USER}" \
     && su "${USER}" -c \
         "mkdir -p ${STEAMCMDDIR} && cd ${STEAMCMDDIR} \
@@ -134,7 +132,6 @@ RUN useradd -l -u "${PUID}" -m "${USER}" \
         && ln -s ${STEAMCMDDIR}/linux64/steamclient.so ${HOMEDIR}/.steam/sdk64/steamclient.so \
         && ln -s ${STEAMCMDDIR}/linux64/steamcmd ${STEAMCMDDIR}/linux64/steam \
         && ln -s ${STEAMCMDDIR}/steamcmd.sh ${STEAMCMDDIR}/steam.sh" \
-    # Global symlinks
     && mkdir -p /usr/lib/x86_64-linux-gnu /usr/lib/i386-linux-gnu \
     && ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "/usr/lib/x86_64-linux-gnu/steamclient.so" \
     && ln -s "${STEAMCMDDIR}/linux32/steamclient.so" "/usr/lib/i386-linux-gnu/steamclient.so" \
@@ -143,5 +140,9 @@ RUN useradd -l -u "${PUID}" -m "${USER}" \
 COPY box64.sh /usr/local/bin/box64
 RUN chmod +x /usr/local/bin/box64
 
+# --- Support original stage names ---
+FROM build_stage AS bookworm-root
 WORKDIR ${STEAMCMDDIR}
+
+FROM bookworm-root AS bookworm
 USER ${USER}
