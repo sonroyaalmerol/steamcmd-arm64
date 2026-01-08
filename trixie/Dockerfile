@@ -56,7 +56,7 @@ FROM base-setup AS bin_rpi4_legacy
 RUN wget -q https://github.com/Pi-Apps-Coders/box64-debs/raw/064eb3cffe90fa40d5ab44325a90720c28aaae2b/debian/box64-rpi4arm64_0.2.7+20240521T063129.3882a98-1_arm64.deb -O legacy.deb \
     && dpkg-deb -x legacy.deb /tmp/legacy && cp /tmp/legacy/usr/local/bin/box64 /box64-rpi4-0_2_7
 
-FROM i386/debian:bookworm-slim AS bookworm_libs
+FROM --platform=linux/386 i386/debian:bookworm-slim AS bookworm_libs
 RUN apt-get update && apt-get install -y libc6 libstdc++6 libssl3 libcurl4
 
 # --- Final Build Stage ---
@@ -71,9 +71,10 @@ ENV USER=steam \
     DEBUGGER="/usr/local/bin/box86" \
     BOX86_BOX64="/usr/local/bin/box64" \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
-    BOX86_LD_LIBRARY_PATH="/home/steam/steamcmd/linux32:/opt/bookworm32/lib:/opt/bookworm32/usr/lib" \
-    BOX86_EMULATED_LIBS="libcrypto.so.1.1:libssl.so.1.1:libc.so.6:libpthread.so.0" \
-    LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+    BOX86_LD_LIBRARY_PATH="/home/steam/steamcmd/linux32:/opt/bookworm32/lib/i386-linux-gnu:/opt/bookworm32/usr/lib/i386-linux-gnu" \
+    BOX86_EMULATED_LIBS="libcrypto.so.1.1:libssl.so.1.1:libc.so.6:libpthread.so.0:libstdc++.so.6:libcurl.so.4" \
+    LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
+    BOX86_NOCRASHHANDLER=1
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
