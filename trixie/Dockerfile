@@ -56,6 +56,9 @@ FROM base-setup AS bin_rpi4_legacy
 RUN wget -q https://github.com/Pi-Apps-Coders/box64-debs/raw/064eb3cffe90fa40d5ab44325a90720c28aaae2b/debian/box64-rpi4arm64_0.2.7+20240521T063129.3882a98-1_arm64.deb -O legacy.deb \
     && dpkg-deb -x legacy.deb /tmp/legacy && cp /tmp/legacy/usr/local/bin/box64 /box64-rpi4-0_2_7
 
+FROM i386/debian:bookworm-slim AS bookworm_libs
+RUN apt-get update && apt-get install -y libc6 libstdc++6 libssl3 libcurl4
+
 # --- Final Build Stage ---
 FROM arm64v8/debian:trixie-slim AS build_stage
 
@@ -68,7 +71,7 @@ ENV USER=steam \
     DEBUGGER="/usr/local/bin/box86" \
     BOX86_BOX64="/usr/local/bin/box64" \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
-    BOX86_LD_LIBRARY_PATH="/home/steam/steamcmd/linux32:/lib/i386-linux-gnu:/usr/lib/i386-linux-gnu" \
+    BOX86_LD_LIBRARY_PATH="/home/steam/steamcmd/linux32:/opt/bookworm32/lib:/opt/bookworm32/usr/lib" \
     BOX86_EMULATED_LIBS="libcrypto.so.1.1:libssl.so.1.1:libc.so.6:libpthread.so.0" \
     LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 
@@ -89,6 +92,9 @@ COPY --from=bin_android /box64-android /usr/local/bin/box64-android
 COPY --from=bin_lx2160a /box64-lx2160a /usr/local/bin/box64-lx2160a
 COPY --from=bin_sd888 /box64-sd888 /usr/local/bin/box64-sd888
 COPY --from=bin_sdoryon1 /box64-sdoryon1 /usr/local/bin/box64-sdoryon1
+
+COPY --from=bookworm_libs /lib/i386-linux-gnu /opt/bookworm32/lib
+COPY --from=bookworm_libs /usr/lib/i386-linux-gnu /opt/bookworm32/usr/lib
 
 # System Setup
 RUN set -x \

@@ -69,7 +69,6 @@ ENV USER=steam \
     BOX86_BOX64="/usr/local/bin/box64" \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
     BOX86_LD_LIBRARY_PATH="/home/steam/steamcmd/linux32:/lib/i386-linux-gnu:/usr/lib/i386-linux-gnu" \
-    BOX86_EMULATED_LIBS="libcrypto.so.1.1:libssl.so.1.1:libc.so.6:libpthread.so.0" \
     LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
