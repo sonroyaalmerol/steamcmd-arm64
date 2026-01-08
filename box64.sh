@@ -26,22 +26,43 @@ case $ARM64_DEVICE in
     rk3588)
         BINARY_PATH="/usr/local/bin/box64-rk3588"
         ;;
+    rk3399)
+        BINARY_PATH="/usr/local/bin/box64-rk3399"
+        ;;
     m1)
         BINARY_PATH="/usr/local/bin/box64-m1"
         ;;
     adlink)
         BINARY_PATH="/usr/local/bin/box64-adlink"
         ;;
+    tegrax1)
+        BINARY_PATH="/usr/local/bin/box64-tegrax1"
+        ;;
+    tegra_t194)
+        BINARY_PATH="/usr/local/bin/box64-tegra-t194"
+        ;;
+    android)
+        BINARY_PATH="/usr/local/bin/box64-android"
+        ;;
+    lx2160a)
+        BINARY_PATH="/usr/local/bin/box64-lx2160a"
+        ;;
+    sd888)
+        BINARY_PATH="/usr/local/bin/box64-sd888"
+        ;;
+    sdoryon1)
+        BINARY_PATH="/usr/local/bin/box64-sdoryon1"
+        ;;
     *)
         BINARY_PATH="/usr/local/bin/box64-generic"
         ;;
 esac
 
-# Check if the box64 exists
-if [[ ! -f $BINARY_PATH ]]; then
-    echo "Error: Box64 file '$BINARY_PATH' not found for architecture '$ARM64_DEVICE'."
+# Check if the box64 binary exists
+if [[ ! -x $BINARY_PATH ]]; then
+    echo "Error: Box64 binary '$BINARY_PATH' not found or not executable for architecture '$ARM64_DEVICE'."
     exit 1
 fi
 
-# Pass all arguments to box64
-"$BINARY_PATH" "$@"
+# Pass all arguments to the selected box64 binary
+exec "$BINARY_PATH" "$@"
