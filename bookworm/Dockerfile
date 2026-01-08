@@ -66,7 +66,7 @@ ENV USER=steam \
     STEAMCMDDIR="/home/steam/steamcmd" \
     DEBIAN_FRONTEND=noninteractive \
     DEBUGGER="/usr/local/bin/box86" \
-    BOX86_BOX64="/usr/local/bin/box64-generic" \
+    BOX86_BOX64="/usr/local/bin/box64" \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
     LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 
@@ -105,13 +105,16 @@ RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends box64 \
     && mv /usr/local/bin/box64 /usr/local/bin/box64-generic \
-    && apt-get download box86-generic-arm:armhf \
+    && apt-get download box86-generic-arm \
     && dpkg-deb -R *.deb box86_tmp \
     && rm -rf box86_tmp/usr/lib/i386-linux-gnu/libstdc++.so* \
     && dpkg-deb -b box86_tmp new_box86.deb \
     && dpkg --force-architecture -i new_box86.deb \
     && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen \
     && rm -rf *.deb box86_tmp /var/lib/apt/lists/*
+
+COPY box64.sh /usr/local/bin/box64
+RUN chmod +x /usr/local/bin/box64
 
 # SteamCMD Setup
 RUN useradd -l -u "${PUID}" -m "${USER}" \
@@ -130,9 +133,6 @@ RUN useradd -l -u "${PUID}" -m "${USER}" \
     && ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "/usr/lib/x86_64-linux-gnu/steamclient.so" \
     && ln -s "${STEAMCMDDIR}/linux32/steamclient.so" "/usr/lib/i386-linux-gnu/steamclient.so" \
     && (for file in /usr/lib/box64-x86_64-linux-gnu/*; do [ -e "/usr/lib/x86_64-linux-gnu/$(basename "$file")" ] || ln -s "$file" /usr/lib/x86_64-linux-gnu/; done)
-
-COPY box64.sh /usr/local/bin/box64
-RUN chmod +x /usr/local/bin/box64
 
 # --- Support original stage names ---
 FROM build_stage AS bookworm-root
