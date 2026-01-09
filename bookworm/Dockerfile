@@ -62,8 +62,9 @@ ENV USER=steam \
     DEBUGGER="/usr/local/bin/box64" \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
     LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
-    BOX64_LOG=1 \
-    DBUS_FATAL_WARNINGS=0
+    BOX64_LOG=2 \
+    DBUS_FATAL_WARNINGS=0 \
+    BOX64_NOSIGSEGV=1
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
