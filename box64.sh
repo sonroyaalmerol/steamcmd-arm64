@@ -1,14 +1,5 @@
 #!/bin/bash
 
-RC_FILE="${HOMEDIR:-/home/steam}/.box64rc"
-ROOT_RC_FILE="/root/.box64rc"
-
-echo "[*]" > "$RC_FILE"
-env | grep '^BOX64_' >> "$RC_FILE"
-
-echo "[*]" > "$ROOT_RC_FILE"
-env | grep '^BOX64_' >> "$ROOT_RC_FILE"
-
 if [[ -z "$ARM64_DEVICE" ]]; then
     echo "Notice: ARM64_DEVICE environment variable is not set. Defaulting to generic."
     ARM64_DEVICE="generic"
@@ -19,31 +10,49 @@ export STEAMOS=1
 export STEAM_RUNTIME=1
 export DBUS_FATAL_WARNINGS=0
 
+# Determine architecture suffix
 case "$ARM64_DEVICE" in
-    rpi5)      BINARY_NAME="box64-rpi5" ;;
-    rpi5_16k)  BINARY_NAME="box64-rpi5-16k" ;;
-    rpi4)      BINARY_NAME="box64-rpi4" ;;
-    rpi3)      BINARY_NAME="box64-rpi3" ;;
-    rk3588)    BINARY_NAME="box64-rk3588" ;;
-    rk3399)    BINARY_NAME="box64-rk3399" ;;
-    m1|apple)  BINARY_NAME="box64-m1" ;;
-    tegrax1)   BINARY_NAME="box64-tegrax1" ;;
-    tegra_t194) BINARY_NAME="box64-tegra-t194" ;;
-    android)   BINARY_NAME="box64-android" ;;
-    lx2160a)   BINARY_NAME="box64-lx2160a" ;;
-    sd888)     BINARY_NAME="box64-sd888" ;;
-    sdoryon1)  BINARY_NAME="box64-sdoryon1" ;;
-    *)         BINARY_NAME="box64-generic" ;;
+    rpi5)       SUFFIX="rpi5" ;;
+    rpi5_16k)   SUFFIX="rpi5-16k" ;;
+    rpi4)       SUFFIX="rpi4" ;;
+    rpi3)       SUFFIX="rpi3" ;;
+    rk3588)     SUFFIX="rk3588" ;;
+    rk3399)     SUFFIX="rk3399" ;;
+    m1|apple)   SUFFIX="m1" ;;
+    tegrax1)    SUFFIX="tegrax1" ;;
+    tegra_t194) SUFFIX="tegra-t194" ;;
+    android)    SUFFIX="android" ;;
+    lx2160a)    SUFFIX="lx2160a" ;;
+    sd888)      SUFFIX="sd888" ;;
+    sdoryon1)   SUFFIX="sdoryon1" ;;
+    *)          SUFFIX="generic" ;;
 esac
+
+# Check if we should use the bash-specific wrapper
+# Logic: If the first argument ends in .sh or is bash, use box64-bash
+USE_BASH_WRAPPER=0
+if [[ "$1" == *.sh ]] || [[ "$1" == "bash" ]] || [[ "$1" == "/bin/bash" ]]; then
+    echo "Notice: Bash script detected. Using box64-bash."
+    USE_BASH_WRAPPER=1
+fi
+
+if [ "$USE_BASH_WRAPPER" -eq 1 ]; then
+    BINARY_NAME="box64-bash-$SUFFIX"
+else
+    BINARY_NAME="box64-$SUFFIX"
+fi
 
 BINARY_PATH="/usr/local/bin/$BINARY_NAME"
 
+# Fallback check
 if [[ ! -x "$BINARY_PATH" ]]; then
-    if command -v box64 >/dev/null 2>&1; then
-        echo "Warning: '$BINARY_PATH' not found. Falling back to system 'box64'."
-        BINARY_PATH=$(command -v box64)
+    # If the specific bash wrapper is missing, try the generic bash wrapper, then the standard generic
+    if [ "$USE_BASH_WRAPPER" -eq 1 ] && [[ -x "/usr/local/bin/box64-bash-generic" ]]; then
+        BINARY_PATH="/usr/local/bin/box64-bash-generic"
+    elif [[ -x "/usr/local/bin/box64-generic" ]]; then
+        BINARY_PATH="/usr/local/bin/box64-generic"
     else
-        echo "Error: No Box64 binary found at '$BINARY_PATH' or in PATH."
+        echo "Error: No Box64 binary found at '$BINARY_PATH' or fallback locations."
         exit 1
     fi
 fi
@@ -60,8 +69,7 @@ if [ "$IS_STEAMCMD" -eq 1 ]; then
     "$BINARY_PATH" "$@"
     STATUS=$?
 
-    # 139 is the standard exit code for SIGSEGV (128 + 11)
-    # 134 is the standard exit code for SIGABRT (128 + 6), often triggered by crash handlers
+    # 139 is SIGSEGV, 134 is SIGABRT
     if [ $STATUS -eq 139 ] || [ $STATUS -eq 134 ]; then
         echo "Notice: Caught steamcmd crash ($STATUS). Masking as Exit 0."
         exit 0
