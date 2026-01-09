@@ -68,6 +68,7 @@ ENV USER=steam \
     DEBUGGER="/usr/local/bin/box86" \
     BOX86_BOX64="/usr/local/bin/box64" \
     BOX86_DYNAREC_STRONGMEM=1 \
+    BOX86_NOCRASHHANDLER=1 \
     BOX86_LOG=1 \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
     LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
