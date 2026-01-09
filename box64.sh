@@ -71,5 +71,3 @@ if [ "$IS_STEAMCMD" -eq 1 ]; then
 else
     exec "$BINARY_PATH" "$@"
 fi
-
-exec "$BINARY_PATH" "$@"
