@@ -38,6 +38,10 @@ fi
 
 if [ "$USE_BASH_WRAPPER" -eq 1 ]; then
     BINARY_NAME="box64-bash-$SUFFIX"
+    # If the specialized bash binary doesn't exist, fall back to standard architecture binary
+    if [[ ! -x "/usr/local/bin/$BINARY_NAME" ]]; then
+        BINARY_NAME="box64-$SUFFIX"
+    fi
 else
     BINARY_NAME="box64-$SUFFIX"
 fi
@@ -46,13 +50,10 @@ BINARY_PATH="/usr/local/bin/$BINARY_NAME"
 
 # Fallback check
 if [[ ! -x "$BINARY_PATH" ]]; then
-    # If the specific bash wrapper is missing, try the generic bash wrapper, then the standard generic
-    if [ "$USE_BASH_WRAPPER" -eq 1 ] && [[ -x "/usr/local/bin/box64-bash-generic" ]]; then
-        BINARY_PATH="/usr/local/bin/box64-bash-generic"
-    elif [[ -x "/usr/local/bin/box64-generic" ]]; then
+    if [[ -x "/usr/local/bin/box64-generic" ]]; then
         BINARY_PATH="/usr/local/bin/box64-generic"
     else
-        echo "Error: No Box64 binary found at '$BINARY_PATH' or fallback locations."
+        echo "Error: No Box64 binary found."
         exit 1
     fi
 fi

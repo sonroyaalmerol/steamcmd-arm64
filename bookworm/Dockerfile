@@ -13,44 +13,57 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # --- Binary Extraction Stages ---
 # Each stage installs the specific box64 build AND the bash counterpart
 FROM base-setup AS bin_m1
-RUN apt-get install -y box64-m1 box64-bash && cp /usr/local/bin/box64 /box64-m1 && cp /usr/local/bin/box64-bash /box64-bash-m1
+RUN apt-get install -y box64-m1 && cp /usr/local/bin/box64 /box64-m1; \
+    cp /usr/local/bin/box64-bash /box64-bash-m1 || true
 
 FROM base-setup AS bin_rpi5
-RUN apt-get install -y box64-rpi5arm64 box64-bash && cp /usr/local/bin/box64 /box64-rpi5 && cp /usr/local/bin/box64-bash /box64-bash-rpi5
+RUN apt-get install -y box64-rpi5arm64 && cp /usr/local/bin/box64 /box64-rpi5; \
+    cp /usr/local/bin/box64-bash /box64-bash-rpi5 || true
 
 FROM base-setup AS bin_rpi5_16k
-RUN apt-get install -y box64-rpi5arm64ps16k box64-bash && cp /usr/local/bin/box64 /box64-rpi5-16k && cp /usr/local/bin/box64-bash /box64-bash-rpi5-16k
+RUN apt-get install -y box64-rpi5arm64ps16k && cp /usr/local/bin/box64 /box64-rpi5-16k; \
+    cp /usr/local/bin/box64-bash /box64-bash-rpi5-16k || true
 
 FROM base-setup AS bin_rpi4
-RUN apt-get install -y box64-rpi4arm64 box64-bash && cp /usr/local/bin/box64 /box64-rpi4 && cp /usr/local/bin/box64-bash /box64-bash-rpi4
+RUN apt-get install -y box64-rpi4arm64 && cp /usr/local/bin/box64 /box64-rpi4; \
+    cp /usr/local/bin/box64-bash /box64-bash-rpi4 || true
 
 FROM base-setup AS bin_rpi3
-RUN apt-get install -y box64-rpi3arm64 box64-bash && cp /usr/local/bin/box64 /box64-rpi3 && cp /usr/local/bin/box64-bash /box64-bash-rpi3
+RUN apt-get install -y box64-rpi3arm64 && cp /usr/local/bin/box64 /box64-rpi3; \
+    cp /usr/local/bin/box64-bash /box64-bash-rpi3 || true
 
 FROM base-setup AS bin_rk3588
-RUN apt-get install -y box64-rk3588 box64-bash && cp /usr/local/bin/box64 /box64-rk3588 && cp /usr/local/bin/box64-bash /box64-bash-rk3588
+RUN apt-get install -y box64-rk3588 && cp /usr/local/bin/box64 /box64-rk3588; \
+    cp /usr/local/bin/box64-bash /box64-bash-rk3588 || true
 
 FROM base-setup AS bin_rk3399
-RUN apt-get install -y box64-rk3399 box64-bash && cp /usr/local/bin/box64 /box64-rk3399 && cp /usr/local/bin/box64-bash /box64-bash-rk3399
+RUN apt-get install -y box64-rk3399 && cp /usr/local/bin/box64 /box64-rk3399; \
+    cp /usr/local/bin/box64-bash /box64-bash-rk3399 || true
 
 FROM base-setup AS bin_tegrax1
-RUN apt-get install -y box64-tegrax1 box64-bash && cp /usr/local/bin/box64 /box64-tegrax1 && cp /usr/local/bin/box64-bash /box64-bash-tegrax1
+RUN apt-get install -y box64-tegrax1 && cp /usr/local/bin/box64 /box64-tegrax1; \
+    cp /usr/local/bin/box64-bash /box64-bash-tegrax1 || true
 
 FROM base-setup AS bin_tegra_t194
-RUN apt-get install -y box64-tegra-t194 box64-bash && cp /usr/local/bin/box64 /box64-tegra-t194 && cp /usr/local/bin/box64-bash /box64-bash-tegra-t194
+RUN apt-get install -y box64-tegra-t194 && cp /usr/local/bin/box64 /box64-tegra-t194; \
+    cp /usr/local/bin/box64-bash /box64-bash-tegra-t194 || true
 
 FROM base-setup AS bin_android
-RUN apt-get install -y box64-android box64-bash && cp /usr/local/bin/box64 /box64-android && cp /usr/local/bin/box64-bash /box64-bash-android
+RUN apt-get install -y box64-android && cp /usr/local/bin/box64 /box64-android; \
+    cp /usr/local/bin/box64-bash /box64-bash-android || true
 
 FROM base-setup AS bin_lx2160a
-RUN apt-get install -y box64-lx2160a box64-bash && cp /usr/local/bin/box64 /box64-lx2160a && cp /usr/local/bin/box64-bash /box64-bash-lx2160a
+RUN apt-get install -y box64-lx2160a && cp /usr/local/bin/box64 /box64-lx2160a; \
+    cp /usr/local/bin/box64-bash /box64-bash-lx2160a || true
 
 FROM base-setup AS bin_sd888
-RUN apt-get install -y box64-sd888 box64-bash && cp /usr/local/bin/box64 /box64-sd888 && cp /usr/local/bin/box64-bash /box64-bash-sd888
+RUN apt-get install -y box64-sd888 && cp /usr/local/bin/box64 /box64-sd888; \
+    cp /usr/local/bin/box64-bash /box64-bash-sd888 || true
 
 FROM base-setup AS bin_sdoryon1
-RUN apt-get install -y box64-sdoryon1 box64-bash && cp /usr/local/bin/box64 /box64-sdoryon1 && cp /usr/local/bin/box64-bash /box64-bash-sdoryon1
-
+RUN apt-get install -y box64-sdoryon1 && cp /usr/local/bin/box64 /box64-sdoryon1; \
+    cp /usr/local/bin/box64-bash /box64-bash-sdoryon1 || true
+	
 # --- Final Build Stage ---
 FROM arm64v8/debian:bookworm-slim AS build_stage
 
@@ -74,44 +87,19 @@ ENV USER=steam \
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Copy all specialized binaries and their bash counterparts
-COPY --from=bin_m1 /box64-m1 /usr/local/bin/box64-m1
-COPY --from=bin_m1 /box64-bash-m1 /usr/local/bin/box64-bash-m1
-
-COPY --from=bin_rpi5 /box64-rpi5 /usr/local/bin/box64-rpi5
-COPY --from=bin_rpi5 /box64-bash-rpi5 /usr/local/bin/box64-bash-rpi5
-
-COPY --from=bin_rpi5_16k /box64-rpi5-16k /usr/local/bin/box64-rpi5-16k
-COPY --from=bin_rpi5_16k /box64-bash-rpi5-16k /usr/local/bin/box64-bash-rpi5-16k
-
-COPY --from=bin_rpi4 /box64-rpi4 /usr/local/bin/box64-rpi4
-COPY --from=bin_rpi4 /box64-bash-rpi4 /usr/local/bin/box64-bash-rpi4
-
-COPY --from=bin_rpi3 /box64-rpi3 /usr/local/bin/box64-rpi3
-COPY --from=bin_rpi3 /box64-bash-rpi3 /usr/local/bin/box64-bash-rpi3
-
-COPY --from=bin_rk3588 /box64-rk3588 /usr/local/bin/box64-rk3588
-COPY --from=bin_rk3588 /box64-bash-rk3588 /usr/local/bin/box64-bash-rk3588
-
-COPY --from=bin_rk3399 /box64-rk3399 /usr/local/bin/box64-rk3399
-COPY --from=bin_rk3399 /box64-bash-rk3399 /usr/local/bin/box64-bash-rk3399
-
-COPY --from=bin_tegrax1 /box64-tegrax1 /usr/local/bin/box64-tegrax1
-COPY --from=bin_tegrax1 /box64-bash-tegrax1 /usr/local/bin/box64-bash-tegrax1
-
-COPY --from=bin_tegra_t194 /box64-tegra-t194 /usr/local/bin/box64-tegra-t194
-COPY --from=bin_tegra_t194 /box64-bash-tegra-t194 /usr/local/bin/box64-bash-tegra-t194
-
-COPY --from=bin_android /box64-android /usr/local/bin/box64-android
-COPY --from=bin_android /box64-bash-android /usr/local/bin/box64-bash-android
-
-COPY --from=bin_lx2160a /box64-lx2160a /usr/local/bin/box64-lx2160a
-COPY --from=bin_lx2160a /box64-bash-lx2160a /usr/local/bin/box64-bash-lx2160a
-
-COPY --from=bin_sd888 /box64-sd888 /usr/local/bin/box64-sd888
-COPY --from=bin_sd888 /box64-bash-sd888 /usr/local/bin/box64-bash-sd888
-
-COPY --from=bin_sdoryon1 /box64-sdoryon1 /usr/local/bin/box64-sdoryon1
-COPY --from=bin_sdoryon1 /box64-bash-sdoryon1 /usr/local/bin/box64-bash-sdoryon1
+COPY --from=bin_m1 /box64-m1 /box64-bash-m1* /usr/local/bin/
+COPY --from=bin_rpi5 /box64-rpi5 /box64-bash-rpi5* /usr/local/bin/
+COPY --from=bin_rpi5_16k /box64-rpi5-16k /box64-bash-rpi5-16k* /usr/local/bin/
+COPY --from=bin_rpi4 /box64-rpi4 /box64-bash-rpi4* /usr/local/bin/
+COPY --from=bin_rpi3 /box64-rpi3 /box64-bash-rpi3* /usr/local/bin/
+COPY --from=bin_rk3588 /box64-rk3588 /box64-bash-rk3588* /usr/local/bin/
+COPY --from=bin_rk3399 /box64-rk3399 /box64-bash-rk3399* /usr/local/bin/
+COPY --from=bin_tegrax1 /box64-tegrax1 /box64-bash-tegrax1* /usr/local/bin/
+COPY --from=bin_tegra_t194 /box64-tegra-t194 /box64-bash-tegra-t194* /usr/local/bin/
+COPY --from=bin_android /box64-android /box64-bash-android* /usr/local/bin/
+COPY --from=bin_lx2160a /box64-lx2160a /box64-bash-lx2160a* /usr/local/bin/
+COPY --from=bin_sd888 /box64-sd888 /box64-bash-sd888* /usr/local/bin/
+COPY --from=bin_sdoryon1 /box64-sdoryon1 /box64-bash-sdoryon1* /usr/local/bin/
 
 # System Setup
 RUN set -x \
@@ -130,7 +118,7 @@ RUN set -x \
     && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
     && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
     && apt-get update \
-    && apt-get install -y --no-install-recommends box64 box64-bash \
+    && apt-get install -y --no-install-recommends box64 \
     && mv /usr/local/bin/box64 /usr/local/bin/box64-generic \
     && mv /usr/local/bin/box64-bash /usr/local/bin/box64-bash-generic \
     && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen \
