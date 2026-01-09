@@ -56,13 +56,6 @@ FROM base-setup AS bin_rpi4_legacy
 RUN wget -q https://github.com/Pi-Apps-Coders/box64-debs/raw/064eb3cffe90fa40d5ab44325a90720c28aaae2b/debian/box64-rpi4arm64_0.2.7+20240521T063129.3882a98-1_arm64.deb -O legacy.deb \
     && dpkg-deb -x legacy.deb /tmp/legacy && cp /tmp/legacy/usr/local/bin/box64 /box64-rpi4-0_2_7
 
-FROM arm64v8/debian:bookworm-slim AS bookworm_libs
-RUN set -x \
-    && dpkg --add-architecture i386 \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libcurl4 libcurl4:i386
-
 # --- Final Build Stage ---
 FROM arm64v8/debian:trixie-slim AS build_stage
 
@@ -74,6 +67,10 @@ ENV USER=steam \
     DEBIAN_FRONTEND=noninteractive \
     DEBUGGER="/usr/local/bin/box86" \
     BOX86_BOX64="/usr/local/bin/box64" \
+    BOX86_NOCRASHHANDLER=1 \
+    BOX86_DYNAREC_SAFEFLAGS=1 \
+    BOX86_X87_NO80BITS=1 \
+    BOX86_EMULATED_LIBS="libpthread.so.0" \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
     BOX86_LD_LIBRARY_PATH="/home/steam/steamcmd/linux32:/lib/i386-linux-gnu:/usr/lib/i386-linux-gnu" \
     LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
@@ -96,18 +93,14 @@ COPY --from=bin_lx2160a /box64-lx2160a /usr/local/bin/box64-lx2160a
 COPY --from=bin_sd888 /box64-sd888 /usr/local/bin/box64-sd888
 COPY --from=bin_sdoryon1 /box64-sdoryon1 /usr/local/bin/box64-sdoryon1
 
-COPY --from=bookworm_libs /usr/lib/aarch64-linux-gnu/libcurl.so.* /usr/lib/aarch64-linux-gnu/
-COPY --from=bookworm_libs /usr/lib/i386-linux-gnu/libcurl.so.* /usr/lib/i386-linux-gnu/
-
 # System Setup
 RUN set -x \
-    && ldconfig \
     && dpkg --add-architecture armhf \
     && dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         libc6:i386 libc6:armhf libstdc++6:armhf \
-        libnuma1 libnuma1:i386 \
+        libcurl4t64 libcurl4t64:i386 libnuma1 libnuma1:i386 \
         libglib2.0-0 libglib2.0-0:i386 \
         openssl ca-certificates nano curl locales wget gnupg \
     && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
