@@ -92,7 +92,7 @@ RUN set -x \
         libstdc++6 libstdc++6:i386 libstdc++6:armhf \
         libcurl4t64 libcurl4t64:i386 libcurl4t64:armhf \
         libnuma1 libnuma1:i386 libnuma1:armhf \
-        libglib2.0-0 libglib2.0-0:i386 libglib2.0-0:armhf \
+        libglib2.0-0t64 libglib2.0-0t64:i386 libglib2.0-0t64:armhf \
         openssl ca-certificates nano curl locales wget gnupg \
     && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
     && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
