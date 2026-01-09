@@ -96,7 +96,7 @@ RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         libc6:armhf libstdc++6:armhf \
-        libcurl4t64:armhf libnuma1:armhf \
+        libcurl4:armhf libnuma1:armhf \
         libglib2.0-0:armhf \
         libncurses5:armhf \
         libtinfo5:armhf \
