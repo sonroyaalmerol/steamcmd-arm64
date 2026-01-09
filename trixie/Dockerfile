@@ -106,19 +106,26 @@ COPY box64.sh /usr/local/bin/box64
 RUN chmod +x /usr/local/bin/box64
 
 # SteamCMD Setup
-RUN useradd -l -u "${PUID}" -m "${USER}" \
-    && su "${USER}" -c \
-        "mkdir -p ${STEAMCMDDIR} && cd ${STEAMCMDDIR} \
-        && curl -fsSL 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz' | tar xvzf - \
-        && ./steamcmd.sh +quit \
-        && ln -s linux32/steamclient.so steamservice.so \
-        && mkdir -p ${HOMEDIR}/.steam/sdk32 ${HOMEDIR}/.steam/sdk64 \
-        && ln -s ${STEAMCMDDIR}/linux32/steamclient.so ${HOMEDIR}/.steam/sdk32/steamclient.so \
-        && ln -s ${STEAMCMDDIR}/linux32/steamcmd ${STEAMCMDDIR}/linux32/steam \
-        && ln -s ${STEAMCMDDIR}/linux64/steamclient.so ${HOMEDIR}/.steam/sdk64/steamclient.so \
-        && ln -s ${STEAMCMDDIR}/linux64/steamcmd ${STEAMCMDDIR}/linux64/steam \
-        && ln -s ${STEAMCMDDIR}/steamcmd.sh ${STEAMCMDDIR}/steam.sh" \
-    && mkdir -p /usr/lib/x86_64-linux-gnu /usr/lib/i386-linux-gnu \
+RUN useradd -l -u "${PUID}" -m "${USER}" && \
+    mkdir -p "${STEAMCMDDIR}" "${HOMEDIR}/.steam/sdk32" "${HOMEDIR}/.steam/sdk64" && \
+    chown -R "${USER}:${USER}" "${HOMEDIR}"
+
+USER ${USER}
+WORKDIR ${HOMEDIR}
+
+RUN set -x \
+    && cd "${STEAMCMDDIR}" \
+    && curl -fsSL 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz' | tar xvzf - \
+    && ./steamcmd.sh +quit \
+    && ln -s linux32/steamclient.so steamservice.so \
+    && ln -s "${STEAMCMDDIR}/linux32/steamclient.so" "${HOMEDIR}/.steam/sdk32/steamclient.so" \
+    && ln -s "${STEAMCMDDIR}/linux32/steamcmd" "${STEAMCMDDIR}/linux32/steam" \
+    && ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "${HOMEDIR}/.steam/sdk64/steamclient.so" \
+    && ln -s "${STEAMCMDDIR}/linux64/steamcmd" "${STEAMCMDDIR}/linux64/steam" \
+    && ln -s "${STEAMCMDDIR}/steamcmd.sh" "${STEAMCMDDIR}/steam.sh"
+
+USER root
+RUN mkdir -p /usr/lib/x86_64-linux-gnu /usr/lib/i386-linux-gnu \
     && ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "/usr/lib/x86_64-linux-gnu/steamclient.so" \
     && ln -s "${STEAMCMDDIR}/linux32/steamclient.so" "/usr/lib/i386-linux-gnu/steamclient.so" \
     && (for file in /usr/lib/box64-x86_64-linux-gnu/*; do [ -e "/usr/lib/x86_64-linux-gnu/$(basename "$file")" ] || ln -s "$file" /usr/lib/x86_64-linux-gnu/; done)
