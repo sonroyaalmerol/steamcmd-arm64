@@ -100,10 +100,8 @@ RUN set -x \
         libc6:armhf libstdc++6:armhf \
         libcurl4t64 libnuma1 \
         libcurl4t64:armhf libnuma1:armhf \
-        libglib2.0-0 \
-        libglib2.0-0:armhf \
-        libncurses5 \
-        libncurses5:armhf \
+        libglib2.0-0t64 \
+        libglib2.0-0t64:armhf \
         libbz2-1.0 \
         libbz2-1.0:armhf \
         zlib1g \

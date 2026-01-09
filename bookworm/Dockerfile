@@ -102,8 +102,6 @@ RUN set -x \
         libcurl4:armhf libnuma1:armhf \
         libglib2.0-0 \
         libglib2.0-0:armhf \
-        libncurses5 \
-        libncurses5:armhf \
         libbz2-1.0 \
         libbz2-1.0:armhf \
         zlib1g \
