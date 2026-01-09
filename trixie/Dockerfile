@@ -75,7 +75,6 @@ ENV USER=steam \
     DEBUGGER="/usr/local/bin/box64" \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
     LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
-    BOX64_BASH="/usr/local/bin/box64-bash" \
     BOX64_ENV1="DBUS_FATAL_WARNINGS=0" \
     BOX64_ENV2="STEAM_RUNTIME=1" \
     BOX64_ENV3="STEAMOS=1" \
@@ -125,8 +124,7 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/*
 
 COPY box64.sh /usr/local/bin/box64
-COPY box64-bash.sh /usr/local/bin/box64-bash
-RUN chmod +x /usr/local/bin/box64 /usr/local/bin/box64-bash
+RUN chmod +x /usr/local/bin/box64
 
 # SteamCMD Setup
 RUN useradd -l -u "${PUID}" -m "${USER}" && \

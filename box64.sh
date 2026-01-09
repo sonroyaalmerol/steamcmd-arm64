@@ -21,6 +21,7 @@ case "$ARM64_DEVICE" in
     *)         SUFFIX="generic" ;;
 esac
 
+export BOX64_BASH="/usr/local/bin/box64-bash-$SUFFIX"
 BINARY_PATH="/usr/local/bin/box64-$SUFFIX"
 
 # Fallback to generic if the specific one is missing
