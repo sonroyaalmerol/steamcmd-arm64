@@ -19,8 +19,6 @@ export BOX64_NOSIGSEGV=1
 export BOX64_CRASHHANDLER=1
 export BOX64_NORCFILES=1
 
-ln -sf /dev/null /home/steam/steamcmd/linux32/crashhandler.so
-
 case "$ARM64_DEVICE" in
     rpi5)      BINARY_NAME="box64-rpi5" ;;
     rpi5_16k)  BINARY_NAME="box64-rpi5-16k" ;;
@@ -48,6 +46,30 @@ if [[ ! -x "$BINARY_PATH" ]]; then
         echo "Error: No Box64 binary found at '$BINARY_PATH' or in PATH."
         exit 1
     fi
+fi
+
+IS_STEAMCMD=0
+for arg in "$@"; do
+    if [[ "$arg" == *"steamcmd"* ]]; then
+        IS_STEAMCMD=1
+        break
+    fi
+done
+
+if [ "$IS_STEAMCMD" -eq 1 ]; then
+    "$BINARY_PATH" "$@"
+    STATUS=$?
+
+    # 139 is the standard exit code for SIGSEGV (128 + 11)
+    # 134 is the standard exit code for SIGABRT (128 + 6), often triggered by crash handlers
+    if [ $STATUS -eq 139 ] || [ $STATUS -eq 134 ]; then
+        echo "Notice: Caught steamcmd crash ($STATUS). Masking as Exit 0."
+        exit 0
+    else
+        exit $STATUS
+    fi
+else
+    exec "$BINARY_PATH" "$@"
 fi
 
 exec "$BINARY_PATH" "$@"
