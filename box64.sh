@@ -16,8 +16,10 @@ export BOX64_ENV3="STEAMOS=1"
 export BOX64_ROLLING_LOG=1
 export BOX64_LOG=1
 export BOX64_NOSIGSEGV=1
-export BOX64_CRASHHANDLER=0
+export BOX64_CRASHHANDLER=1
 export BOX64_NORCFILES=1
+
+export LD_LIBRARY_PATH=""
 
 case "$ARM64_DEVICE" in
     rpi5)      BINARY_NAME="box64-rpi5" ;;
