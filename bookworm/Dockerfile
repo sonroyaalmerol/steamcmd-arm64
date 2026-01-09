@@ -95,7 +95,7 @@ RUN set -x \
     && dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        libc6:i386 libc6:armhf libstdc++6:i386 libstdc++6:armhf \
+        libc6:i386 libc6:armhf libstdc++6:armhf \
         libcurl4 libcurl4:i386 libnuma1 libnuma1:i386 \
         libglib2.0-0 libglib2.0-0:i386 \
         openssl ca-certificates nano curl locales wget gnupg \
@@ -104,15 +104,10 @@ RUN set -x \
     && wget -qO- https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list \
     && wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg \
     && apt-get update \
-    && apt-get install -y --no-install-recommends box64 \
+    && apt-get install -y --no-install-recommends box64 box86-generic-arm:armhf \
     && mv /usr/local/bin/box64 /usr/local/bin/box64-generic \
-    && apt-get download box86-generic-arm \
-    && dpkg-deb -R *.deb box86_tmp \
-    && rm -rf box86_tmp/usr/lib/i386-linux-gnu/libstdc++.so* \
-    && dpkg-deb -b box86_tmp new_box86.deb \
-    && dpkg --force-architecture -i new_box86.deb \
     && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen \
-    && rm -rf *.deb box86_tmp /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 COPY box64.sh /usr/local/bin/box64
 RUN chmod +x /usr/local/bin/box64
