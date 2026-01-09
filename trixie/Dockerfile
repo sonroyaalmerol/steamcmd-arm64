@@ -88,6 +88,8 @@ RUN set -x \
     && dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
+        lib32gcc-s1-amd64-cross \
+        lib32stdc++6-amd64-cross \
         libc6 libc6:i386 libc6:armhf \
         libstdc++6 libstdc++6:i386 libstdc++6:armhf \
         libcurl4t64 libcurl4t64:i386 libcurl4t64:armhf \
