@@ -19,11 +19,7 @@ export BOX64_NOSIGSEGV=1
 export BOX64_CRASHHANDLER=1
 export BOX64_NORCFILES=1
 
-mkdir -p /tmp/steam_mask
-ln -sf /dev/null /tmp/steam_mask/crashhandler.so
-
-export BOX64_LD_LIBRARY_PATH="/tmp/steam_mask:$BOX64_LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="/tmp/steam_mask"
+ln -sf /dev/null /home/steam/steamcmd/linux32/crashhandler.so
 
 case "$ARM64_DEVICE" in
     rpi5)      BINARY_NAME="box64-rpi5" ;;
