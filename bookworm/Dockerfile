@@ -114,7 +114,6 @@ RUN useradd -l -u "${PUID}" -m "${USER}" \
     && su "${USER}" -c \
         "mkdir -p ${STEAMCMDDIR} && cd ${STEAMCMDDIR} \
         && curl -fsSL 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz' | tar xvzf - \
-        && rm -rf linux32/crashhandler.so \
         && ./steamcmd.sh +quit \
         && ln -s linux32/steamclient.so steamservice.so \
         && mkdir -p ${HOMEDIR}/.steam/sdk32 ${HOMEDIR}/.steam/sdk64 \

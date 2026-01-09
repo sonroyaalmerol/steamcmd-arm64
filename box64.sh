@@ -58,5 +58,7 @@ if [[ ! -x $BINARY_PATH ]]; then
     exit 1
 fi
 
+rm -rf /home/steam/steamcmd/linux32/crashhandler.so
+
 # Pass all arguments to the selected box64 binary
 exec "$BINARY_PATH" "$@"
