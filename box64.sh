@@ -1,5 +1,14 @@
 #!/bin/bash
 
+RC_FILE="${HOMEDIR:-/home/steam}/.box64rc"
+ROOT_RC_FILE="/root/.box64rc"
+
+echo "[*]" > "$RC_FILE"
+env | grep '^BOX64_' >> "$RC_FILE"
+
+echo "[*]" > "$ROOT_RC_FILE"
+env | grep '^BOX64_' >> "$ROOT_RC_FILE"
+
 if [[ -z "$ARM64_DEVICE" ]]; then
     echo "Notice: ARM64_DEVICE environment variable is not set. Defaulting to generic."
     ARM64_DEVICE="generic"
@@ -9,14 +18,6 @@ fi
 export STEAMOS=1
 export STEAM_RUNTIME=1
 export DBUS_FATAL_WARNINGS=0
-export BOX64_ENV1="DBUS_FATAL_WARNINGS=0"
-export BOX64_ENV2="STEAM_RUNTIME=1"
-export BOX64_ENV3="STEAMOS=1"
-
-export BOX64_ROLLING_LOG=1
-export BOX64_LOG=1
-export BOX64_NOSIGSEGV=1
-export BOX64_CRASHHANDLER=1
 
 case "$ARM64_DEVICE" in
     rpi5)      BINARY_NAME="box64-rpi5" ;;
