@@ -3,13 +3,11 @@ FROM arm64v8/debian:bookworm-slim AS base-setup
 ENV DEBIAN_FRONTEND=noninteractive
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Install common dependencies and setup Box64/Box86 repositories once
+# Install common dependencies and setup Box64 repositories once
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates wget gnupg \
     && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
     && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
-    && wget -qO- https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list \
-    && wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg \
     && apt-get update
 
 # --- Binary Extraction Stages ---
@@ -52,10 +50,6 @@ RUN apt-get install -y box64-sd888 && cp /usr/local/bin/box64 /box64-sd888
 FROM base-setup AS bin_sdoryon1
 RUN apt-get install -y box64-sdoryon1 && cp /usr/local/bin/box64 /box64-sdoryon1
 
-FROM base-setup AS bin_rpi4_legacy
-RUN wget -q https://github.com/Pi-Apps-Coders/box64-debs/raw/064eb3cffe90fa40d5ab44325a90720c28aaae2b/debian/box64-rpi4arm64_0.2.7+20240521T063129.3882a98-1_arm64.deb -O legacy.deb \
-    && dpkg-deb -x legacy.deb /tmp/legacy && cp /tmp/legacy/usr/local/bin/box64 /box64-rpi4-0_2_7
-
 # --- Final Build Stage ---
 FROM arm64v8/debian:bookworm-slim AS build_stage
 
@@ -65,13 +59,8 @@ ENV USER=steam \
     HOMEDIR="/home/steam" \
     STEAMCMDDIR="/home/steam/steamcmd" \
     DEBIAN_FRONTEND=noninteractive \
-    DEBUGGER="/usr/local/bin/box86" \
-    BOX86_BOX64="/usr/local/bin/box64" \
-    BOX86_DYNAREC_STRONGMEM=1 \
-    BOX86_NOCRASHHANDLER=1 \
-    BOX86_LOG=1 \
+    DEBUGGER="/usr/local/bin/box64" \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
-    BOX86_LD_LIBRARY_PATH="/home/steam/steamcmd/linux32:/lib/i386-linux-gnu:/usr/lib/i386-linux-gnu" \
     LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -81,7 +70,6 @@ COPY --from=bin_m1 /box64-m1 /usr/local/bin/box64-m1
 COPY --from=bin_rpi5 /box64-rpi5 /usr/local/bin/box64-rpi5
 COPY --from=bin_rpi5_16k /box64-rpi5-16k /usr/local/bin/box64-rpi5-16k
 COPY --from=bin_rpi4 /box64-rpi4 /usr/local/bin/box64-rpi4
-COPY --from=bin_rpi4_legacy /box64-rpi4-0_2_7 /usr/local/bin/box64-rpi4-0_2_7
 COPY --from=bin_rpi3 /box64-rpi3 /usr/local/bin/box64-rpi3
 COPY --from=bin_rk3588 /box64-rk3588 /usr/local/bin/box64-rk3588
 COPY --from=bin_rk3399 /box64-rk3399 /usr/local/bin/box64-rk3399
@@ -104,10 +92,8 @@ RUN set -x \
         openssl ca-certificates nano curl locales wget gnupg \
     && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
     && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
-    && wget -qO- https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list \
-    && wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg \
     && apt-get update \
-    && apt-get install -y --no-install-recommends box64 box86-generic-arm:armhf \
+    && apt-get install -y --no-install-recommends box64 \
     && mv /usr/local/bin/box64 /usr/local/bin/box64-generic \
     && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen \
     && rm -rf /var/lib/apt/lists/*

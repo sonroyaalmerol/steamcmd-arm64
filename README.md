@@ -21,7 +21,7 @@
 The Steam Console Client or SteamCMD is a command-line version of the Steam client. Its primary use is to install and update various dedicated servers available on Steam using a command-line interface. It works with games that use the SteamPipe content system. All games have been migrated from the deprecated HLDSUpdateTool to SteamCMD. This image can be used as a base image for Steam-based dedicated servers (Source: [developer.valvesoftware.com](https://developer.valvesoftware.com/wiki/SteamCMD)).
 
 # What makes this compatible with ARM64?
-This image has [Box64](https://github.com/ptitSeb/box64) and [Box86](https://github.com/ptitSeb/box86) integrated. By default, SteamCMD will be using Box86 when running via the steamcmd.sh shell script. Box86 is needed as SteamCMD itself a 32-bit binary application. For 64-bit server binaries, please use Box64 `/usr/local/bin/box64`. For tweaking, environment variables could be used for both [Box64](https://github.com/ptitSeb/box64/blob/main/docs/USAGE.md) and [Box86](https://github.com/ptitSeb/box86/blob/master/docs/USAGE.md).
+This image has [Box64](https://github.com/ptitSeb/box64) integrated. By default, SteamCMD will be using Box32 (built within Box64) when running via the steamcmd.sh shell script. Box32 is needed as SteamCMD itself a 32-bit binary application. For 64-bit server binaries, please use Box64 `/usr/local/bin/box64`. For tweaking, environment variables could be used for [Box64](https://github.com/ptitSeb/box64/blob/main/docs/USAGE.md).
 
 # How to use this image
 > [!IMPORTANT]
@@ -74,7 +74,6 @@ This image currently includes specialized Box64 build variants optimized for var
 | **Raspberry Pi 5 (4k page size)** | `rpi5` |
 | **Raspberry Pi 5 (16k page size)** | `rpi5_16k` |
 | **Raspberry Pi 4** | `rpi4` |
-| **Raspberry Pi 4 (Legacy v0.2.7)** | `rpi4-pre3` |
 | **Raspberry Pi 3** | `rpi3` |
 | **Orange Pi 5 / RK3588** | `rk3588` |
 | **RK3399** | `rk3399` |
