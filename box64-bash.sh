@@ -21,27 +21,22 @@ case "$ARM64_DEVICE" in
     *)         SUFFIX="generic" ;;
 esac
 
-BINARY_PATH="/usr/local/bin/box64-$SUFFIX"
+# Primary target: The architecture-specific bash wrapper
+BINARY_PATH="/usr/local/bin/box64-bash-$SUFFIX"
 
-# Fallback to generic if the specific one is missing
+# Fallback 1: Generic bash wrapper
+if [[ ! -x "$BINARY_PATH" ]]; then
+    BINARY_PATH="/usr/local/bin/box64-bash-generic"
+fi
+
+# Fallback 2: Standard architecture emulator (if no bash-wrapper exists at all)
+if [[ ! -x "$BINARY_PATH" ]]; then
+    BINARY_PATH="/usr/local/bin/box64-$SUFFIX"
+fi
+
+# Fallback 3: Standard generic emulator
 if [[ ! -x "$BINARY_PATH" ]]; then
     BINARY_PATH="/usr/local/bin/box64-generic"
 fi
 
-# SteamCMD crash masking logic
-IS_STEAMCMD=0
-for arg in "$@"; do
-    if [[ "$arg" == *"steamcmd"* ]]; then
-        IS_STEAMCMD=1
-        break
-    fi
-done
-
-if [ "$IS_STEAMCMD" -eq 1 ]; then
-    "$BINARY_PATH" "$@"
-    STATUS=$?
-    [[ $STATUS -eq 139 || $STATUS -eq 134 ]] && exit 0
-    exit $STATUS
-else
-    exec "$BINARY_PATH" "$@"
-fi
+exec "$BINARY_PATH" "$@"
