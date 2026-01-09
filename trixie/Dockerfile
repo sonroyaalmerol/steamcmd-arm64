@@ -98,21 +98,9 @@ RUN set -x \
     && dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        libc6 libstdc++6 \
-        libc6:armhf libstdc++6:armhf \
-        libc6:i386 libstdc++6:i386 \
-        libcurl4t64 libnuma1 \
-        libcurl4t64:armhf libnuma1:armhf \
-        libcurl4t64:i386 libnuma1:i386 \
-        libglib2.0-0t64 \
-        libglib2.0-0t64:armhf \
-        libglib2.0-0t64:i386 \
-        libbz2-1.0 \
-        libbz2-1.0:armhf \
-        libbz2-1.0:i386 \
-        zlib1g \
-        zlib1g:armhf \
-        zlib1g:i386 \
+        libc6:i386 libc6:armhf libstdc++6:armhf \
+        libcurl4t64 libcurl4t64:i386 libnuma1 libnuma1:i386 \
+        libglib2.0-0 libglib2.0-0:i386 \
         openssl ca-certificates nano curl locales wget gnupg \
     && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
     && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
