@@ -77,6 +77,8 @@ ENV USER=steam \
   LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu:/usr/lib/box64-i386-linux-gnu" \
   LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
   BOX64_LD_LIBRARY_PATH="/usr/lib/box64-x86_64-linux-gnu:/usr/lib/box64-i386-linux-gnu" \
+  BOX64_LD_PRELOAD=libpthread.so.0 \
+  LD_PRELOAD=libpthread.so.0 \
   DBUS_FATAL_WARNINGS=0 \
   STEAM_RUNTIME=1 \
   STEAMOS=1 \
