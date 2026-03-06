@@ -73,7 +73,7 @@ ENV USER=steam \
   HOMEDIR="/home/steam" \
   STEAMCMDDIR="/home/steam/steamcmd" \
   DEBIAN_FRONTEND=noninteractive \
-  DEBUGGER="/usr/local/bin/box64" \
+  DEBUGGER="/usr/local/bin/box86" \
   LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu:/usr/lib/box64-i386-linux-gnu" \
   LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
   BOX64_LD_LIBRARY_PATH="/usr/lib/box64-x86_64-linux-gnu:/usr/lib/box64-i386-linux-gnu" \
@@ -122,10 +122,12 @@ RUN set -x \
   libudev1:arm64 libudev1:armhf \
   libdbus-1-3:arm64 libdbus-1-3:armhf \
   openssl ca-certificates nano curl locales wget gnupg tar \
+  && wget -qO- https://ryanfortner.github.io/box86-debs/box64.list -O /etc/apt/sources.list.d/box86.list \
+  && wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg \
   && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
   && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
   && apt-get update \
-  && apt-get install -y --no-install-recommends box64 \
+  && apt-get install -y --no-install-recommends box64 box86-generic-arm \
   && mv /usr/local/bin/box64 /usr/local/bin/box64-generic \
   && mv /usr/local/bin/box64-bash /usr/local/bin/box64-bash-generic \
   && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen \
