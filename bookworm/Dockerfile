@@ -104,16 +104,11 @@ COPY --from=bin_sdoryon1 /box64-sdoryon1 /box64-bash-sdoryon1* /usr/local/bin/
 # System Setup
 RUN set -x \
   && dpkg --add-architecture armhf \
-  && dpkg --add-architecture i386 \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
-  lib32gcc-s1-amd64-cross \
-  lib32stdc++6-amd64-cross \
-  libc6 libc6:i386 libc6:armhf \
-  libstdc++6 libstdc++6:i386 libstdc++6:armhf \
-  libcurl4 libcurl4:i386 libcurl4:armhf \
-  libnuma1 libnuma1:i386 libnuma1:armhf \
-  libglib2.0-0 libglib2.0-0:i386 libglib2.0-0:armhf \
+  libc6:arm64 libstdc++6:arm64 libcurl4:arm64 libnuma1:arm64 libglib2.0-0:arm64 \
+  libc6:armhf libstdc++6:armhf libcurl4:armhf libnuma1:armhf libglib2.0-0:armhf \
+  libncurses5:arm64 libncurses5:armhf libbz2-1.0:arm64 libbz2-1.0:armhf \
   openssl ca-certificates nano curl locales wget gnupg \
   && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
   && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
