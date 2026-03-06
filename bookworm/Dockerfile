@@ -96,8 +96,8 @@ ENV USER=steam \
   BOX64_ENV3="STEAMOS=1" \
   BOX64_ROLLING_LOG=1 \
   BOX64_LOG=1 \
-  BOX64_NOSIGSEGV=1 \
-  BOX64_CRASHHANDLER=1
+  BOX64_SHOWSEGV=1 \ 
+  BOX64_DLSYM_ERROR=1
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
