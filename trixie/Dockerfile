@@ -109,12 +109,12 @@ RUN set -x \
   && dpkg --add-architecture armhf \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
-  libc6:arm64 libstdc++6:arm64 libcurl4:arm64 libnuma1:arm64 libglib2.0-0:arm64 \
-  libc6:armhf libstdc++6:armhf libcurl4:armhf libnuma1:armhf libglib2.0-0:armhf \
+  libc6:arm64 libstdc++6:arm64 libcurl4:arm64 libnuma1:arm64 libglib2.0-0t64:arm64 \
+  libc6:armhf libstdc++6:armhf libcurl4:armhf libnuma1:armhf libglib2.0-0t64:armhf \
   libncurses6:arm64 libncurses6:armhf \
   libbz2-1.0:arm64 libbz2-1.0:armhf \
   libcurl3t64-gnutls:arm64 libcurl3t64-gnutls:armhf \
-  libssl3:arm64 libssl3:armhf \
+  libssl3t64:arm64 libssl3t64:armhf \
   zlib1g:arm64 zlib1g:armhf \
   liblzma5:arm64 liblzma5:armhf \
   libsqlite3-0:arm64 libsqlite3-0:armhf \
