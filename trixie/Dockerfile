@@ -72,16 +72,20 @@ ENV USER=steam \
   HOMEDIR="/home/steam" \
   STEAMCMDDIR="/home/steam/steamcmd" \
   DEBIAN_FRONTEND=noninteractive \
-  DEBUGGER="/usr/local/bin/box64" \
-  LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
+  DEBUGGER="/usr/local/bin/box86" \
+  LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu:/usr/lib/box64-i386-linux-gnu" \
   LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
+  BOX64_LD_LIBRARY_PATH="/usr/lib/box64-x86_64-linux-gnu:/usr/lib/box64-i386-linux-gnu" \
+  BOX64_LD_PRELOAD=libpthread.so.0 \
+  LD_PRELOAD=libpthread.so.0 \
+  DBUS_FATAL_WARNINGS=0 \
+  STEAM_RUNTIME=1 \
+  STEAMOS=1 \
   BOX64_ENV1="DBUS_FATAL_WARNINGS=0" \
   BOX64_ENV2="STEAM_RUNTIME=1" \
   BOX64_ENV3="STEAMOS=1" \
   BOX64_ROLLING_LOG=1 \
-  BOX64_LOG=1 \
-  BOX64_NOSIGSEGV=1 \
-  BOX64_CRASHHANDLER=1
+  BOX64_LOG=1
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -103,21 +107,27 @@ COPY --from=bin_sdoryon1 /box64-sdoryon1 /box64-bash-sdoryon1* /usr/local/bin/
 # System Setup
 RUN set -x \
   && dpkg --add-architecture armhf \
-  && dpkg --add-architecture i386 \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
-  lib32gcc-s1-amd64-cross \
-  lib32stdc++6-amd64-cross \
-  libc6 libc6:i386 libc6:armhf \
-  libstdc++6 libstdc++6:i386 libstdc++6:armhf \
-  libcurl4t64 libcurl4t64:i386 libcurl4t64:armhf \
-  libnuma1 libnuma1:i386 libnuma1:armhf \
-  libglib2.0-0t64 libglib2.0-0t64:i386 libglib2.0-0t64:armhf \
-  openssl ca-certificates nano curl locales wget gnupg \
+  libc6:arm64 libstdc++6:arm64 libcurl4:arm64 libnuma1:arm64 libglib2.0-0:arm64 \
+  libc6:armhf libstdc++6:armhf libcurl4:armhf libnuma1:armhf libglib2.0-0:armhf \
+  libncurses6:arm64 libncurses6:armhf \
+  libbz2-1.0:arm64 libbz2-1.0:armhf \
+  libcurl3t64-gnutls:arm64 libcurl3t64-gnutls:armhf \
+  libssl3:arm64 libssl3:armhf \
+  zlib1g:arm64 zlib1g:armhf \
+  liblzma5:arm64 liblzma5:armhf \
+  libsqlite3-0:arm64 libsqlite3-0:armhf \
+  libgcc-s1:arm64 libgcc-s1:armhf \
+  libudev1:arm64 libudev1:armhf \
+  libdbus-1-3:arm64 libdbus-1-3:armhf \
+  openssl ca-certificates nano curl locales wget gnupg tar \
+  && wget -qO- https://ryanfortner.github.io -O /etc/apt/sources.list.d/box86.list \
+  && wget -qO- https://ryanfortner.github.io | gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg \
   && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
   && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
   && apt-get update \
-  && apt-get install -y --no-install-recommends box64 \
+  && apt-get install -y --no-install-recommends box64 box86-generic-arm \
   && mv /usr/local/bin/box64 /usr/local/bin/box64-generic \
   && mv /usr/local/bin/box64-bash /usr/local/bin/box64-bash-generic \
   && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen \
@@ -148,8 +158,9 @@ RUN set -x \
 USER root
 RUN mkdir -p /usr/lib/x86_64-linux-gnu /usr/lib/i386-linux-gnu \
   && ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "/usr/lib/x86_64-linux-gnu/steamclient.so" \
+  && ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "/usr/lib/box64-x86_64-linux-gnu/steamclient.so" \
   && ln -s "${STEAMCMDDIR}/linux32/steamclient.so" "/usr/lib/i386-linux-gnu/steamclient.so" \
-  && (for file in /usr/lib/box64-x86_64-linux-gnu/*; do [ -e "/usr/lib/x86_64-linux-gnu/$(basename "$file")" ] || ln -s "$file" /usr/lib/x86_64-linux-gnu/; done)
+  && ln -s "${STEAMCMDDIR}/linux32/steamclient.so" "/usr/lib/box64-i386-linux-gnu/steamclient.so"
 
 # --- Support original stage names ---
 FROM build_stage AS trixie-root
