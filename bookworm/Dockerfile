@@ -10,6 +10,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
   && apt-get update
 
+# --- Library Bundling Stage ---
+FROM base-setup AS lib_bundler
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  binutils coreutils curl rpm2cpio tar zstd
+
+WORKDIR /tmp/bundle
+RUN curl -fsSL https://github.com/ptitSeb/box64/raw/refs/heads/main/box64-bundle-x86-libs.csv -o box64-bundle-x86-libs.csv \
+  && curl -fsSL https://github.com/ptitSeb/box64/raw/refs/heads/main/box64-bundle-x86-libs.sh -o box64-bundle-x86-libs.sh \
+  && chmod +x box64-bundle-x86-libs.sh \
+  && ./box64-bundle-x86-libs.sh
+
 # --- Binary Extraction Stages ---
 # Each stage installs the specific box64 build AND the bash counterpart
 FROM base-setup AS bin_m1
@@ -74,8 +85,12 @@ ENV USER=steam \
   STEAMCMDDIR="/home/steam/steamcmd" \
   DEBIAN_FRONTEND=noninteractive \
   DEBUGGER="/usr/local/bin/box64" \
-  LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu" \
+  LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/box64-x86_64-linux-gnu:/usr/lib/box64-i386-linux-gnu" \
   LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
+  BOX64_LD_LIBRARY_PATH="/usr/lib/box64-x86_64-linux-gnu:/usr/lib/box64-i386-linux-gnu" \
+  DBUS_FATAL_WARNINGS=0 \
+  STEAM_RUNTIME=1 \
+  STEAMOS=1 \
   BOX64_ENV1="DBUS_FATAL_WARNINGS=0" \
   BOX64_ENV2="STEAM_RUNTIME=1" \
   BOX64_ENV3="STEAMOS=1" \
@@ -85,6 +100,8 @@ ENV USER=steam \
   BOX64_CRASHHANDLER=1
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+COPY --from=lib_bundler /tmp/bundle /tmp/bundle
 
 # Copy all specialized binaries and their bash counterparts
 COPY --from=bin_m1 /box64-m1 /box64-bash-m1* /usr/local/bin/
@@ -109,7 +126,17 @@ RUN set -x \
   libc6:arm64 libstdc++6:arm64 libcurl4:arm64 libnuma1:arm64 libglib2.0-0:arm64 \
   libc6:armhf libstdc++6:armhf libcurl4:armhf libnuma1:armhf libglib2.0-0:armhf \
   libncurses5:arm64 libncurses5:armhf libbz2-1.0:arm64 libbz2-1.0:armhf \
-  openssl ca-certificates nano curl locales wget gnupg \
+  libcurl3-gnutls:arm64 libcurl3-gnutls:armhf \
+  libssl3:arm64 libssl3:armhf \
+  zlib1g:arm64 zlib1g:armhf \
+  liblzma5:arm64 liblzma5:armhf \
+  libsqlite3-0:arm64 libsqlite3-0:armhf \
+  libgcc-s1:arm64 libgcc-s1:armhf \
+  libudev1:arm64 libudev1:armhf \
+  libdbus-1-3:arm64 libdbus-1-3:armhf \
+  openssl ca-certificates nano curl locales wget gnupg tar \
+  && tar --extract --no-same-owner --file /tmp/bundle/box64-bundle-x86-libs.tar.gz --directory / \
+  && rm -rf /tmp/bundle \
   && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
   && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
   && apt-get update \
@@ -144,8 +171,9 @@ RUN set -x \
 USER root
 RUN mkdir -p /usr/lib/x86_64-linux-gnu /usr/lib/i386-linux-gnu \
   && ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "/usr/lib/x86_64-linux-gnu/steamclient.so" \
+  && ln -s "${STEAMCMDDIR}/linux64/steamclient.so" "/usr/lib/box64-x86_64-linux-gnu/steamclient.so" \
   && ln -s "${STEAMCMDDIR}/linux32/steamclient.so" "/usr/lib/i386-linux-gnu/steamclient.so" \
-  && (for file in /usr/lib/box64-x86_64-linux-gnu/*; do [ -e "/usr/lib/x86_64-linux-gnu/$(basename "$file")" ] || ln -s "$file" /usr/lib/x86_64-linux-gnu/; done)
+  && ln -s "${STEAMCMDDIR}/linux32/steamclient.so" "/usr/lib/box64-i386-linux-gnu/steamclient.so"
 
 # --- Support original stage names ---
 FROM build_stage AS bookworm-root
