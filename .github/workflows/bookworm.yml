@@ -11,7 +11,7 @@ on: # yamllint disable-line rule:truthy
 jobs:
   release:
     name: Release - Docker image
-    runs-on: ubuntu-latest
+    runs-on: ARM64
     steps:
       - name: Get current date
         id: current-date
