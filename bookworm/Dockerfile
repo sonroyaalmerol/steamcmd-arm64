@@ -90,8 +90,6 @@ ENV USER=steam \
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY --from=lib_bundler /tmp/bundle /tmp/bundle
-
 # Copy all specialized binaries and their bash counterparts
 COPY --from=bin_m1 /box64-m1 /box64-bash-m1* /usr/local/bin/
 COPY --from=bin_rpi5 /box64-rpi5 /box64-bash-rpi5* /usr/local/bin/
