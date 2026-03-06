@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # --- Library Bundling Stage ---
 FROM base-setup AS lib_bundler
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  binutils coreutils curl rpm2cpio tar zstd
+  binutils coreutils curl rpm2cpio tar zstd cpio unzip xz-utils
 
 WORKDIR /tmp/bundle
 RUN curl -fsSL https://github.com/ptitSeb/box64/raw/refs/heads/main/box64-bundle-x86-libs.csv -o box64-bundle-x86-libs.csv \
