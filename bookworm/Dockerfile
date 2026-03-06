@@ -86,9 +86,7 @@ ENV USER=steam \
   BOX64_ENV2="STEAM_RUNTIME=1" \
   BOX64_ENV3="STEAMOS=1" \
   BOX64_ROLLING_LOG=1 \
-  BOX64_LOG=1 \
-  BOX64_SHOWSEGV=1 \ 
-  BOX64_DLSYM_ERROR=1
+  BOX64_LOG=1
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
