@@ -122,8 +122,8 @@ RUN set -x \
   libudev1:arm64 libudev1:armhf \
   libdbus-1-3:arm64 libdbus-1-3:armhf \
   openssl ca-certificates nano curl locales wget gnupg tar \
-  && wget -qO- https://ryanfortner.github.io -O /etc/apt/sources.list.d/box86.list \
-  && wget -qO- https://ryanfortner.github.io | gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg \
+  && wget -qO- https://ryanfortner.github.io/box86-debs/box86.list -O /etc/apt/sources.list.d/box86.list \
+  && wget -qO- https://ryanfortner.github.io/box86-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box86-debs-archive-keyring.gpg \
   && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
   && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
   && apt-get update \
