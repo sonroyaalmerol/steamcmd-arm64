@@ -10,17 +10,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
   && apt-get update
 
-# --- Library Bundling Stage ---
-FROM base-setup AS lib_bundler
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  binutils coreutils curl rpm2cpio tar zstd cpio unzip xz-utils
-
-WORKDIR /tmp/bundle
-RUN curl -fsSL https://github.com/ptitSeb/box64/raw/refs/heads/main/box64-bundle-x86-libs.csv -o box64-bundle-x86-libs.csv \
-  && curl -fsSL https://github.com/ptitSeb/box64/raw/refs/heads/main/box64-bundle-x86-libs.sh -o box64-bundle-x86-libs.sh \
-  && chmod +x box64-bundle-x86-libs.sh \
-  && ./box64-bundle-x86-libs.sh
-
 # --- Binary Extraction Stages ---
 # Each stage installs the specific box64 build AND the bash counterpart
 FROM base-setup AS bin_m1
@@ -135,8 +124,6 @@ RUN set -x \
   libudev1:arm64 libudev1:armhf \
   libdbus-1-3:arm64 libdbus-1-3:armhf \
   openssl ca-certificates nano curl locales wget gnupg tar \
-  && tar --extract --no-same-owner --file /tmp/bundle/box64-bundle-x86-libs.tar.gz --directory / \
-  && rm -rf /tmp/bundle \
   && wget -qO- https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list \
   && wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg \
   && apt-get update \
